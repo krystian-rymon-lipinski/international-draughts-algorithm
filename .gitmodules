@@ -1,0 +1,3 @@
+[submodule "international-draughts-library"]
+	path = international-draughts-library
+	url = https://github.com/krystian-rymon-lipinski/international-draughts-library
