@@ -8,13 +8,5 @@ repositories {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
-    api project(':international-draughts-library')
-}
-
-allprojects {
-    task hello {
-        doLast { task ->
-            println "I'm $task.project.name"
-        }
-    }
+    api project('international-draughts-library')
 }
