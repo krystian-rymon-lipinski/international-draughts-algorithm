@@ -10,6 +10,7 @@ public class MainAlgorithm {
 
     private int depth;
     private MoveTree moveTree;
+    private boolean isPlayedColorWhite;
     GameEngine gameEngine;
 
 
@@ -20,7 +21,6 @@ public class MainAlgorithm {
 
     public void calculateTree() {
         bindMovesAsNodes();
-
     }
 
     public void bindMovesAsNodes() {
