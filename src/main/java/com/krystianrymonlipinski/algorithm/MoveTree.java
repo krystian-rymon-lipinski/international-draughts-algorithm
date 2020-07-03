@@ -1,6 +1,7 @@
 package com.krystianrymonlipinski.algorithm;
 
 import com.krystianrymonlipinski.exceptions.NoAncestorForRootNodeException;
+import com.krystianrymonlipinski.exceptions.NodeConditionNotFoundException;
 import com.krystianrymonlipinski.exceptions.NodeWithNoChildrenException;
 import com.krystianrymonlipinski.tree.model.Node;
 import com.krystianrymonlipinski.tree.model.Tree;
@@ -38,7 +39,7 @@ public class MoveTree extends Tree<Integer, Move<? extends Hop>> {
             super.moveDown(move);
             gameEngine.getBoardManager().makeWholeMove(move);
             gameEngine.finishMove(move);
-        } catch(NodeWithNoChildrenException ex) {
+        } catch(NodeWithNoChildrenException | NodeConditionNotFoundException ex) {
             ex.printStackTrace();
         }
     }

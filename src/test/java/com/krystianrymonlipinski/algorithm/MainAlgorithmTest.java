@@ -1,8 +1,11 @@
 package com.krystianrymonlipinski.algorithm;
 
 import com.krystianrymonlipinski.tree.model.Node;
+import draughts.library.boardmodel.Piece;
 import draughts.library.boardmodel.Tile;
 import draughts.library.managers.BoardManager;
+import draughts.library.managers.GameEngine;
+import draughts.library.movemodel.Capture;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 import org.junit.Before;
@@ -27,7 +30,7 @@ public class MainAlgorithmTest {
         moveTree = testObj.getMoveTree();
         boardManager = moveTree.getGameEngine().getBoardManager();
         boardManager.createEmptyBoard();
-
+        moveTree.getGameEngine().setGameState(GameEngine.GameState.RUNNING);
     }
 
     public Tile getTile(int index) {
@@ -35,7 +38,7 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findNodes_oneLevelDeep() {
+    public void calculateTree_oneLevelDeep() {
         boardManager.addWhitePawn(28);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
@@ -50,7 +53,7 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findNodes_twoLevelsDeep() {
+    public void calculateTree_twoLevelsDeep() {
         boardManager.addWhitePawn(28);
         boardManager.addBlackPawn(8);
         moveTree.getGameEngine().setIsWhiteToMove(true);
@@ -68,7 +71,7 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findNodes_sixLevelsDeep() {
+    public void calculateTree_sixLevelsDeep() {
         boardManager.addWhitePawn(46);
         boardManager.addBlackPawn(3);
         moveTree.getGameEngine().setIsWhiteToMove(true);
@@ -93,21 +96,47 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findNodes_withCaptureInTheTree() {
-
-    }
-
-    @Test
-    public void findNodes_withPossibilityOfWinningInTheTree() {
+    public void calculateTree_withCaptureInTheTree() {
         boardManager.addWhitePawn(28);
         boardManager.addBlackPawn(19);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
-        testObj.setDepth(6);
+        testObj.setDepth(2);
         testObj.calculateTree();
 
-        assertEquals(testObj.getMoveTree().getRoot().getIndex(), testObj.getMoveTree().getCurrentNode().getIndex());
-        assertEquals(52, testObj.getMoveTree().getNodes().size());
+        int[] numberOfNodesOnLevel = new int[3];
+        for(Node<Integer, Move<? extends Hop>> node : testObj.getMoveTree().getNodes()) {
+            numberOfNodesOnLevel[node.getLevel()]++;
+        }
+        assertEquals(1, numberOfNodesOnLevel[0]);
+        assertEquals(2, numberOfNodesOnLevel[1]);
+        assertEquals(3, numberOfNodesOnLevel[2]);
+    }
+
+    @Test
+    public void calculateTree_withPossibilityOfWinningInTheTree() {
+        Piece whitePiece = boardManager.addWhitePawn(28);
+        Piece blackPiece = boardManager.addBlackPawn(19);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(3);
+        testObj.calculateTree();
+
+        Move<Hop> whiteMove = new Move<>(whitePiece);
+        whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(23)));
+        Move<Capture> blackMove = new Move<>(blackPiece);
+        blackMove.addHop(new Capture(blackPiece.getPosition(), getTile(28), whitePiece));
+
+        testObj.getMoveTree().moveDown(whiteMove);
+        testObj.getMoveTree().moveDown(blackMove);
+
+        assertEquals(0, moveTree.getCurrentNode().getChildren().size());
+        assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getGameEngine().getGameState());
+    }
+
+    @Test
+    public void calculateTree_withPossibilityOfDrawingInTheTree() {
+
     }
 
 }
