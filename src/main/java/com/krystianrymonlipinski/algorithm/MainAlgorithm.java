@@ -6,7 +6,6 @@ import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MainAlgorithm {
 
@@ -17,6 +16,11 @@ public class MainAlgorithm {
     public MainAlgorithm(int depth) {
         this.depth = depth;
         moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), new GameEngine());
+    }
+
+    public MainAlgorithm(int depth, GameEngine gameEngine) {
+        this(depth);
+        moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
     }
 
     public int getDepth() {
@@ -41,18 +45,22 @@ public class MainAlgorithm {
 
     public void bindMovesAsNodes() {
         ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
+        moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
-        for(Move<? extends Hop> move : moves) {
-            moveTree.addNode(moveTree.getCurrentNode(), move);
-        }
+        if (moveTree.getCurrentNode().getLevel() < depth &&
+                moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
 
-        for(Node<Integer, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-            moveTree.moveDown(node.getCondition());
-            //rewardCalculator.assessPosition();
-            if (moveTree.getCurrentNode().getLevel() < depth &&
-                    moveTree.getGameEngine().getGameState() == GameEngine.GameState.RUNNING)
+
+            for(Move<? extends Hop> move : moves) {
+                moveTree.addNode(moveTree.getCurrentNode(), move);
+            }
+
+            for(Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+                moveTree.moveDown(node.getCondition());
+                //rewardCalculator.assessPosition();
                 bindMovesAsNodes();
-            moveTree.moveUp();
+                moveTree.moveUp();
+            }
         }
     }
 }

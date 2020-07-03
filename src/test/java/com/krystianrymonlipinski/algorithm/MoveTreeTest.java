@@ -25,6 +25,7 @@ public class MoveTreeTest {
     @Before
     public void setUp() {
         gameEngine = new GameEngine();
+        gameEngine.setGameState(GameEngine.GameState.RUNNING);
         MoveTree moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
         testObj = spy(moveTree);
         gameEngine.getBoardManager().createEmptyBoard();
@@ -32,6 +33,16 @@ public class MoveTreeTest {
 
     public Tile getTile(int index) {
         return gameEngine.getBoardManager().findTileByIndex(index);
+    }
+
+    @Test
+    public void addNode_checkState() {
+        assertEquals(GameEngine.GameState.RUNNING, testObj.getCurrentNode().getState().getGameState());
+        Piece movingPiece = gameEngine.getBoardManager().addWhitePawn(23);
+        Move<Hop> move = new Move<>(movingPiece, new Hop(getTile(23), getTile(18)));
+
+        Node<PositionState, Move<? extends Hop>> child = testObj.addNode(testObj.getCurrentNode(), move);
+        assertEquals(GameEngine.GameState.RUNNING, child.getState().getGameState());
     }
 
     @Test
@@ -104,7 +115,7 @@ public class MoveTreeTest {
 
         testObj.addNode(testObj.getCurrentNode(), move);
         testObj.moveDown(move);
-        Node<Integer, Move<? extends Hop>> previousNode = testObj.moveUp();
+        Node<PositionState, Move<? extends Hop>> previousNode = testObj.moveUp();
 
         assertEquals(takenPiece1, previousNode.getCondition().getMoveTakenPawns().get(0));
         assertEquals(takenPiece2, previousNode.getCondition().getMoveTakenPawns().get(1));

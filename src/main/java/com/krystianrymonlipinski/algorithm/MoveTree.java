@@ -13,17 +13,18 @@ import draughts.library.movemodel.Move;
 import java.util.ArrayList;
 
 
-public class MoveTree extends Tree<Integer, Move<? extends Hop>> {
+public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
 
     private GameEngine gameEngine;
 
-    public MoveTree(Node<Integer, Move<? extends Hop>> root) {
+    public MoveTree(Node<PositionState, Move<? extends Hop>> root) {
         super(root);
     }
 
-    public MoveTree(Node<Integer, Move<? extends Hop>> root, GameEngine gameEngine) {
+    public MoveTree(Node<PositionState, Move<? extends Hop>> root, GameEngine gameEngine) {
         this(root);
         this.gameEngine = gameEngine;
+        root.setState(new PositionState(gameEngine.getGameState()));
     }
 
     public GameEngine getGameEngine() {
@@ -32,6 +33,12 @@ public class MoveTree extends Tree<Integer, Move<? extends Hop>> {
 
     public void setGameEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
+    }
+
+    public Node<PositionState, Move<? extends Hop>> addNode(Node<PositionState, Move<? extends Hop>> node, Move<? extends Hop> move) {
+        Node<PositionState, Move<? extends Hop>> newNode = super.addNode(node, move);
+        newNode.setState(new PositionState(gameEngine.getGameState()));
+        return newNode;
     }
 
     public void moveDown(Move<? extends Hop> move) {
@@ -44,9 +51,9 @@ public class MoveTree extends Tree<Integer, Move<? extends Hop>> {
         }
     }
 
-    public Node<Integer, Move<? extends Hop>> moveUp() {
+    public Node<PositionState, Move<? extends Hop>> moveUp() {
         try {
-            Node<Integer, Move<? extends Hop>> previousNode = super.moveUp();
+            Node<PositionState, Move<? extends Hop>> previousNode = super.moveUp();
             ArrayList<Piece> piecesToReturn = gameEngine.getBoardManager().reverseWholeMove(previousNode.getCondition());
             if (previousNode.getCondition().getIsPromotion()) {
                 Piece demotedPawn = gameEngine.getBoardManager().demoteQueen(previousNode.getCondition().getMovingPiece());
