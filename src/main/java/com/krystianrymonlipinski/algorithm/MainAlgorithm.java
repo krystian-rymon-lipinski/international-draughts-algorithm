@@ -1,5 +1,6 @@
 package com.krystianrymonlipinski.algorithm;
 
+import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
@@ -11,12 +12,26 @@ public class MainAlgorithm {
     private int depth;
     private MoveTree moveTree;
     private boolean isPlayedColorWhite;
-    GameEngine gameEngine;
-
 
     public MainAlgorithm(int depth) {
         this.depth = depth;
-        gameEngine = new GameEngine();
+        moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), new GameEngine());
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
+    public MoveTree getMoveTree() {
+        return moveTree;
+    }
+
+    public void setMoveTree(MoveTree moveTree) {
+        this.moveTree = moveTree;
     }
 
     public void calculateTree() {
@@ -24,11 +39,20 @@ public class MainAlgorithm {
     }
 
     public void bindMovesAsNodes() {
-        ArrayList<Move<? extends Hop>> moves = gameEngine.getMoveManager().findAllCorrectMoves(gameEngine.getBoardManager(), true);
+        System.out.println("White to move: " + moveTree.getGameEngine().getIsWhiteToMove());
+        ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
+        System.out.println("Moves: " + moves.size());
+        for(Move<? extends Hop> move : moves) {
+            System.out.println(move);
+        }
 
         for(Move<? extends Hop> move : moves) {
             moveTree.addNode(moveTree.getCurrentNode(), move);
-            moveTree.moveDown(move);
+        }
+
+        for(Node<Integer, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+            System.out.println("Move: " + node.getCondition());
+            moveTree.moveDown(node.getCondition());
             //rewardCalculator.assessPosition();
             if(moveTree.getCurrentNode().getLevel() < depth) bindMovesAsNodes();
             moveTree.moveUp();
