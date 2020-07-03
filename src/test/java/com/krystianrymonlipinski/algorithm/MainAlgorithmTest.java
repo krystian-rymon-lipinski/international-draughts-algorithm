@@ -93,12 +93,12 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findNodes_withCapture() {
+    public void findNodes_withCaptureInTheTree() {
 
     }
-/*
+
     @Test
-    public void findNodes_withPossibilityOfWinning() {
+    public void findNodes_withPossibilityOfWinningInTheTree() {
         boardManager.addWhitePawn(28);
         boardManager.addBlackPawn(19);
         moveTree.getGameEngine().setIsWhiteToMove(true);
@@ -110,5 +110,4 @@ public class MainAlgorithmTest {
         assertEquals(52, testObj.getMoveTree().getNodes().size());
     }
 
- */
 }

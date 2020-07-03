@@ -39,9 +39,7 @@ public class MainAlgorithm {
     }
 
     public void bindMovesAsNodes() {
-        System.out.println("White to move: " + moveTree.getGameEngine().getIsWhiteToMove());
         ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
-        System.out.println("Moves: " + moves.size());
         for(Move<? extends Hop> move : moves) {
             System.out.println(move);
         }

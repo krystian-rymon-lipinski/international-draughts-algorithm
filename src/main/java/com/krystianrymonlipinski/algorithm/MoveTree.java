@@ -52,9 +52,7 @@ public class MoveTree extends Tree<Integer, Move<? extends Hop>> {
                 previousNode.getCondition().setMovingPiece(demotedPawn);
             }
             if (previousNode.getCondition().isCapture()) {
-                for (Piece piece : previousNode.getCondition().getMoveTakenPawns()) {
-                    previousNode.getCondition().getMoveTakenPawns()
-                }
+                previousNode.getCondition().setMoveTakenPawns(piecesToReturn);
             }
             gameEngine.changeColor();
             return previousNode;

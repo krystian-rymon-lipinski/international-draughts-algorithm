@@ -4,6 +4,7 @@ import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
 import draughts.library.boardmodel.Tile;
 import draughts.library.managers.GameEngine;
+import draughts.library.movemodel.Capture;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 import org.junit.Before;
@@ -88,5 +89,24 @@ public class MoveTreeTest {
         testObj.moveUp();
 
         assertFalse(move.getMovingPiece().isQueen());
+    }
+
+    @Test
+    public void moveUp_restorePawns() {
+        gameEngine.setIsWhiteToMove(false);
+        Piece movingPiece = gameEngine.getBoardManager().addBlackPawn(28);
+        Piece takenPiece1 = gameEngine.getBoardManager().addWhitePawn(33);
+        Piece takenPiece2 = gameEngine.getBoardManager().addWhitePawn(43);
+
+        Move<Capture> move = new Move<>(movingPiece);
+        move.addHop(new Capture(getTile(28), getTile(39), takenPiece1));
+        move.addHop(new Capture(getTile(39), getTile(48), takenPiece2));
+
+        testObj.addNode(testObj.getCurrentNode(), move);
+        testObj.moveDown(move);
+        Node<Integer, Move<? extends Hop>> previousNode = testObj.moveUp();
+
+        assertEquals(takenPiece1, previousNode.getCondition().getMoveTakenPawns().get(0));
+        assertEquals(takenPiece2, previousNode.getCondition().getMoveTakenPawns().get(1));
     }
 }
