@@ -44,23 +44,33 @@ public class MainAlgorithm {
     }
 
     public void bindMovesAsNodes() {
-        ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
-        moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
+        if (moveTree.getCurrentNode().getLevel() < depth) {
 
-        if (moveTree.getCurrentNode().getLevel() < depth &&
-                moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
+            ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
+            moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
+            if (moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
 
-            for(Move<? extends Hop> move : moves) {
-                moveTree.addNode(moveTree.getCurrentNode(), move);
-            }
+                for (Move<? extends Hop> move : moves) {
+                    moveTree.addNode(moveTree.getCurrentNode(), move);
+                }
 
-            for(Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-                moveTree.moveDown(node.getCondition());
-                //rewardCalculator.assessPosition();
-                bindMovesAsNodes();
-                moveTree.moveUp();
+                for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+                    moveTree.moveDown(node.getCondition());
+                    //rewardCalculator.assessPosition();
+                    bindMovesAsNodes();
+                    moveTree.moveUp();
+                }
             }
         }
+    }
+
+    public void updateTreeAfterMove(Move<? extends Hop> move) {
+        moveTree.moveDown(move);
+        moveTree.setChildAsNewRoot(moveTree.getCurrentNode());
+    }
+
+    public void calculateTreeLevel(int level) {
+
     }
 }
