@@ -38,6 +38,7 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
     public Node<PositionState, Move<? extends Hop>> addNode(Node<PositionState, Move<? extends Hop>> node, Move<? extends Hop> move) {
         Node<PositionState, Move<? extends Hop>> newNode = super.addNode(node, move);
         newNode.setState(new PositionState(gameEngine.getGameState()));
+        System.out.println("Node added: " + newNode.getCondition() + " Level: " + newNode.getLevel());
         return newNode;
     }
 
@@ -45,16 +46,16 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
         try {
             System.out.println("Before moving down: ");
             System.out.println("Current node: " + currentNode.getCondition());
-            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
-                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("Node state: " + currentNode.getState().getGameState());
+            System.out.println("Game state: " + gameEngine.getGameState());
 
             super.moveDown(move);
             gameEngine.getBoardManager().makeWholeMove(move);
             gameEngine.finishMove(move);
             System.out.println("After moving down: ");
             System.out.println("Current node: " + currentNode.getCondition());
-            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
-                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("Node state: " + currentNode.getState().getGameState());
+            System.out.println("Game state: " + gameEngine.getGameState());
             System.out.println("-------------");
 
         } catch(NodeWithNoChildrenException | NodeConditionNotFoundException ex) {
@@ -66,8 +67,8 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
         try {
             System.out.println("Before moving up: ");
             System.out.println("Current node before moving up: " + currentNode.getCondition());
-            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
-                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("Node state: " + currentNode.getState().getGameState());
+            System.out.println("Game state: " + gameEngine.getGameState());
             Node<PositionState, Move<? extends Hop>> previousNode = super.moveUp();
             if (previousNode.getCondition().getIsPromotion()) {
                 Piece demotedPawn = gameEngine.getBoardManager().demoteQueen(previousNode.getCondition().getMovingPiece());
@@ -77,8 +78,8 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
             gameEngine.changeColor();
             System.out.println("After moving up: ");
             System.out.println("Current node after moving up: " + currentNode.getCondition());
-            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
-                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("Node state: " + currentNode.getState().getGameState());
+            System.out.println("Game state: " + gameEngine.getGameState());
             System.out.println("-------------");
             return previousNode;
         } catch (NoAncestorForRootNodeException ex) {

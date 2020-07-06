@@ -40,12 +40,13 @@ public class MainAlgorithm {
     }
 
     public void calculateTree() {
-        bindMovesAsNodes();
+        bindMovesAsNodes(depth);
     }
 
-    public void bindMovesAsNodes() {
-        if (moveTree.getCurrentNode().getLevel() < depth) {
-
+    private void bindMovesAsNodes(int maxLevel) {
+        System.out.println("Check if nodes should be bound");
+        if (moveTree.getCurrentNode().getLevel() < maxLevel) {
+            System.out.println("Binding nodes...");
             ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
             moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
@@ -58,7 +59,7 @@ public class MainAlgorithm {
                 for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
                     moveTree.moveDown(node.getCondition());
                     //rewardCalculator.assessPosition();
-                    bindMovesAsNodes();
+                    bindMovesAsNodes(maxLevel);
                     moveTree.moveUp();
                 }
             }
@@ -70,7 +71,39 @@ public class MainAlgorithm {
         moveTree.setChildAsNewRoot(moveTree.getCurrentNode());
     }
 
-    public void calculateTreeLevel(int level) {
-
+    public void calculateTreeLevel(int level) throws ChosenLevelAlreadyCalculatedException {
+        if (level <= depth) {
+            if (moveTree.getCurrentNode().getChildren().size() > 0) {
+                travelThroughTree(level);
+            }
+            else {
+                //isLevelAlreadyCalculated(level);
+                bindMovesAsNodes(level);
+            }
+        }
     }
+
+    public void travelThroughTree(int level) throws ChosenLevelAlreadyCalculatedException {
+        System.out.println("Travel through tree");
+        isLevelAlreadyCalculated(level);
+        for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+            moveTree.moveDown(node.getCondition());
+            if (moveTree.getCurrentNode().getChildren().size() > 0) {
+                travelThroughTree(level);
+            }
+            else {
+                System.out.println("Moves should be found");
+                bindMovesAsNodes(level);
+                moveTree.moveUp();
+            }
+        }
+    }
+
+    public void isLevelAlreadyCalculated(int level) throws ChosenLevelAlreadyCalculatedException {
+        if (moveTree.getCurrentNode().getLevel() >= level) {
+            throw new ChosenLevelAlreadyCalculatedException("Level " + level + " is already calculated!");
+        }
+    }
+
+
 }

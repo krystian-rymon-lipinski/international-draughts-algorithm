@@ -1,5 +1,6 @@
 package com.krystianrymonlipinski.algorithm;
 
+import com.krystianrymonlipinski.exceptions.NoAncestorForRootNodeException;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
 import draughts.library.boardmodel.Tile;
@@ -165,9 +166,10 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void calculateTreeLevel() {
+    public void calculateTreeLevel() throws Exception{
         Piece whitePiece = boardManager.addWhitePawn(32);
         boardManager.addBlackPawn(17);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
         testObj.calculateTree();
@@ -177,8 +179,23 @@ public class MainAlgorithmTest {
 
         testObj.updateTreeAfterMove(whiteMove);
 
+        assertEquals(3, moveTree.getNodes().size());
+
         int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
 
+        assertEquals(0, moveTree.getCurrentNode().getLevel());
+        assertEquals(1, numberOfNodesOnLevel[0]);
+        assertEquals(2, numberOfNodesOnLevel[1]);
+        assertEquals(0, numberOfNodesOnLevel[2]);
+
+        testObj.calculateTreeLevel(2);
+        numberOfNodesOnLevel = calculateNodesOnLevels(3);
+
+        assertEquals(2, numberOfNodesOnLevel[2]);
+    }
+
+    @Test
+    public void calculateTreeLevel_levelAlreadyCalculated() {
 
     }
 
