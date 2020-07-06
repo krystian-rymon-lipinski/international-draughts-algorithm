@@ -43,9 +43,20 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
 
     public void moveDown(Move<? extends Hop> move) {
         try {
+            System.out.println("Before moving down: ");
+            System.out.println("Current node: " + currentNode.getCondition());
+            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
+                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+
             super.moveDown(move);
             gameEngine.getBoardManager().makeWholeMove(move);
             gameEngine.finishMove(move);
+            System.out.println("After moving down: ");
+            System.out.println("Current node: " + currentNode.getCondition());
+            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
+                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("-------------");
+
         } catch(NodeWithNoChildrenException | NodeConditionNotFoundException ex) {
             ex.printStackTrace();
         }
@@ -53,16 +64,22 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
 
     public Node<PositionState, Move<? extends Hop>> moveUp() {
         try {
+            System.out.println("Before moving up: ");
+            System.out.println("Current node before moving up: " + currentNode.getCondition());
+            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
+                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
             Node<PositionState, Move<? extends Hop>> previousNode = super.moveUp();
-            ArrayList<Piece> piecesToReturn = gameEngine.getBoardManager().reverseWholeMove(previousNode.getCondition());
             if (previousNode.getCondition().getIsPromotion()) {
                 Piece demotedPawn = gameEngine.getBoardManager().demoteQueen(previousNode.getCondition().getMovingPiece());
                 previousNode.getCondition().setMovingPiece(demotedPawn);
             }
-            if (previousNode.getCondition().isCapture()) {
-                previousNode.getCondition().setMoveTakenPawns(piecesToReturn);
-            }
+            gameEngine.getBoardManager().reverseWholeMove(previousNode.getCondition());
             gameEngine.changeColor();
+            System.out.println("After moving up: ");
+            System.out.println("Current node after moving up: " + currentNode.getCondition());
+            if (gameEngine.getBoardManager().getBlackPieces().size() > 0)
+                System.out.println("Position of a black pawn: " + gameEngine.getBoardManager().getBlackPieces().get(0));
+            System.out.println("-------------");
             return previousNode;
         } catch (NoAncestorForRootNodeException ex) {
             ex.printStackTrace();
