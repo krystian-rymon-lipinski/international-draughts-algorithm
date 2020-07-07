@@ -136,6 +136,7 @@ public class MainAlgorithmTest {
         testObj.getMoveTree().moveDown(blackMove);
 
         assertEquals(0, moveTree.getCurrentNode().getChildren().size());
+        assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getGameEngine().getGameState());
         assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getCurrentNode().getState().getGameState());
     }
 
@@ -144,8 +145,11 @@ public class MainAlgorithmTest {
         Piece whitePiece = boardManager.addWhiteQueen(40);
         boardManager.addBlackPawn(5);
         moveTree.getGameEngine().setIsWhiteToMove(true);
-        moveTree.getGameEngine().getDrawArbiter().setDrawConditions(DrawArbiter.DrawConditions.TWO_VS_ONE);
-        moveTree.getGameEngine().getDrawArbiter().setDrawCounter(1);
+        DrawArbiter drawArbiter = new DrawArbiter();
+        drawArbiter.setDrawCounter(1);
+        drawArbiter.setDrawConditions(DrawArbiter.DrawConditions.TWO_VS_ONE);
+        moveTree.getGameEngine().setDrawArbiter(drawArbiter);
+        moveTree.saveGameStateToNode();
 
         testObj.setDepth(3);
         testObj.calculateTree();
@@ -156,6 +160,8 @@ public class MainAlgorithmTest {
         testObj.getMoveTree().moveDown(whiteMove);
 
         assertEquals(GameEngine.GameState.DRAWN, moveTree.getGameEngine().getGameState());
+        assertEquals(GameEngine.GameState.DRAWN, moveTree.getCurrentNode().getState().getGameState());
+        assertEquals(0, moveTree.getCurrentNode().getState().getDrawCounter());
 
         int[] numberOfNodesOnLevel = calculateNodesOnLevels(4);
 
