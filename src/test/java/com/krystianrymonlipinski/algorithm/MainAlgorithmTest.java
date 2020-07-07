@@ -229,11 +229,12 @@ public class MainAlgorithmTest {
         blackMove.addHop(new Hop(blackPiece.getPosition(), getTile(21)));
         moveTree.moveDown(blackMove);
 
+        moveTree.returnToRoot();
         testObj.calculateTreeLevel(2);
 
         int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
 
-        assertEquals(1, moveTree.getCurrentNode().getLevel());
+        assertEquals(0, moveTree.getCurrentNode().getLevel());
         assertEquals(1, numberOfNodesOnLevel[0]);
         assertEquals(2, numberOfNodesOnLevel[1]);
         assertEquals(2, numberOfNodesOnLevel[2]);
