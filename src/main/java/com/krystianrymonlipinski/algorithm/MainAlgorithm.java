@@ -77,7 +77,7 @@ public class MainAlgorithm {
                 travelThroughTree(level);
             }
             else {
-                //isLevelAlreadyCalculated(level);
+                isLevelAlreadyCalculated(level);
                 bindMovesAsNodes(level);
             }
         }
@@ -85,7 +85,6 @@ public class MainAlgorithm {
 
     public void travelThroughTree(int level) throws ChosenLevelAlreadyCalculatedException {
         System.out.println("Travel through tree");
-        isLevelAlreadyCalculated(level);
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
             moveTree.moveDown(node.getCondition());
             if (moveTree.getCurrentNode().getChildren().size() > 0) {
@@ -93,6 +92,7 @@ public class MainAlgorithm {
             }
             else {
                 System.out.println("Moves should be found");
+                isLevelAlreadyCalculated(level);
                 bindMovesAsNodes(level);
                 moveTree.moveUp();
             }
