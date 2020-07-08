@@ -11,6 +11,7 @@ public class MainAlgorithm {
 
     private int depth;
     private MoveTree moveTree;
+    private RewardCalculator rewardCalculator;
     private boolean isPlayedColorWhite;
 
     public MainAlgorithm(int depth) {
@@ -21,6 +22,7 @@ public class MainAlgorithm {
     public MainAlgorithm(int depth, GameEngine gameEngine) {
         this(depth);
         moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
+        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
     }
 
     public int getDepth() {
@@ -58,7 +60,7 @@ public class MainAlgorithm {
 
                 for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
                     moveTree.moveDown(node.getCondition());
-                    //rewardCalculator.assessPosition();
+                    rewardCalculator.assessPosition(node);
                     bindMovesAsNodes(maxLevel);
                     moveTree.moveUp();
                 }
