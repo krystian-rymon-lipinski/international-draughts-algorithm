@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MainAlgorithmTest {
@@ -29,6 +29,7 @@ public class MainAlgorithmTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.setGameState(GameEngine.GameState.RUNNING);
         testObj = new MainAlgorithm(10, gameEngine);
+        testObj.setPlayedColorWhite(true);
         moveTree = testObj.getMoveTree();
         boardManager = moveTree.getGameEngine().getBoardManager();
         boardManager.createEmptyBoard();
@@ -58,6 +59,7 @@ public class MainAlgorithmTest {
         assertEquals(3, testObj.getMoveTree().getNodes().size());
         for(Node<PositionState, Move<? extends Hop>> node : testObj.getMoveTree().getCurrentNode().getChildren()) {
             assertEquals(getTile(28), node.getCondition().getMovingPiece().getPosition());
+            assertNotEquals(0, node.getState().getRewardFunctionOutcome());
         }
     }
 

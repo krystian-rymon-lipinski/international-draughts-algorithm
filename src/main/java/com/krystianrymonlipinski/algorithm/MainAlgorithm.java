@@ -22,7 +22,7 @@ public class MainAlgorithm {
     public MainAlgorithm(int depth, GameEngine gameEngine) {
         this(depth);
         moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
-        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
+        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager(), isPlayedColorWhite);
     }
 
     public int getDepth() {
@@ -39,6 +39,14 @@ public class MainAlgorithm {
 
     public void setMoveTree(MoveTree moveTree) {
         this.moveTree = moveTree;
+    }
+
+    public boolean isPlayedColorWhite() {
+        return isPlayedColorWhite;
+    }
+
+    public void setPlayedColorWhite(boolean playedColorWhite) {
+        isPlayedColorWhite = playedColorWhite;
     }
 
     public void calculateTree() {
