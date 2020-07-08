@@ -11,29 +11,50 @@ import java.util.ArrayList;
 public class RewardCalculator {
 
     private final BoardManager boardManager;
-    private boolean isPlayedColorWhite;
 
-    public RewardCalculator(BoardManager boardManager, boolean isPlayedColorWhite) {
+    public RewardCalculator(BoardManager boardManager) {
         this.boardManager = boardManager;
-        this.isPlayedColorWhite = isPlayedColorWhite;
     }
 
-    public void assessPosition(Node<PositionState, Move<? extends Hop>> node) {
+    public void assessPosition(Node<PositionState, Move<? extends Hop>> node, boolean isPlayedColorWhite) {
         double rewardOutcome = 0;
 
-        double whitePiecesValue = assessPieces(boardManager.getWhitePieces());
-        double blackPiecesValue = assessPieces(boardManager.getBlackPieces());
+        switch (node.getState().getGameState()) {
+            case RUNNING:
+                rewardOutcome = assessPieces(isPlayedColorWhite);
+                break;
+            case WON_BY_BLACK:
+                if (isPlayedColorWhite) rewardOutcome = -100;
+                else                    rewardOutcome = 100;
+                break;
+            case WON_BY_WHITE:
+                if (isPlayedColorWhite) rewardOutcome = 100;
+                else                    rewardOutcome = -100;
+                break;
+            case DRAWN:
+                rewardOutcome = 0;
+            default:
+                break;
+        }
+
+        node.getState().setRewardFunctionOutcome(rewardOutcome);
+
+    }
+
+    public double assessPieces(boolean isPlayedColorWhite) {
+        double rewardOutcome = 0;
+        double whitePiecesValue = calculateBasicPiecesValue(boardManager.getWhitePieces());
+        double blackPiecesValue = calculateBasicPiecesValue(boardManager.getBlackPieces());
 
         rewardOutcome = whitePiecesValue - blackPiecesValue;
 
         if (!isPlayedColorWhite) {
             rewardOutcome *= -1;
         }
-
-        node.getState().setRewardFunctionOutcome(rewardOutcome);
+        return rewardOutcome;
     }
 
-    public double assessPieces(ArrayList<Piece> pieces) {
+    public double calculateBasicPiecesValue(ArrayList<Piece> pieces) {
         double value = 0;
         for (Piece piece : pieces) {
             if (piece.isQueen()) value += calculateQueenValue();

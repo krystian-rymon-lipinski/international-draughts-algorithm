@@ -46,6 +46,7 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
             gameEngine.getBoardManager().makeWholeMove(move);
             gameEngine.finishMove(move);
             saveGameStateToNode();
+            System.out.println("Node: " + getCurrentNode().getIndex() + " Reward: " + getCurrentNode().getState().getRewardFunctionOutcome());
         } catch(NodeWithNoChildrenException | NodeConditionNotFoundException ex) {
             ex.printStackTrace();
         }
@@ -61,6 +62,7 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
             }
             gameEngine.getBoardManager().reverseWholeMove(previousNode.getCondition());
             gameEngine.changeColor();
+            System.out.println("Node: " + getCurrentNode().getIndex() + " Reward: " + getCurrentNode().getState().getRewardFunctionOutcome());
             return previousNode;
         } catch (NoAncestorForRootNodeException ex) {
             ex.printStackTrace();

@@ -22,7 +22,7 @@ public class MainAlgorithm {
     public MainAlgorithm(int depth, GameEngine gameEngine) {
         this(depth);
         moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
-        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager(), isPlayedColorWhite);
+        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
     }
 
     public int getDepth() {
@@ -54,9 +54,7 @@ public class MainAlgorithm {
     }
 
     private void bindMovesAsNodes(int maxLevel) {
-        System.out.println("Check if nodes should be bound");
         if (moveTree.getCurrentNode().getLevel() < maxLevel) {
-            System.out.println("Binding nodes...");
             ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
             moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
@@ -68,7 +66,7 @@ public class MainAlgorithm {
 
                 for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
                     moveTree.moveDown(node.getCondition());
-                    rewardCalculator.assessPosition(node);
+                    rewardCalculator.assessPosition(node, isPlayedColorWhite);
                     bindMovesAsNodes(maxLevel);
                     moveTree.moveUp();
                 }
@@ -94,14 +92,12 @@ public class MainAlgorithm {
     }
 
     public void travelThroughTree(int level) throws ChosenLevelAlreadyCalculatedException {
-        System.out.println("Travel through tree");
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
             moveTree.moveDown(node.getCondition());
             if (moveTree.getCurrentNode().getChildren().size() > 0) {
                 travelThroughTree(level);
             }
             else {
-                System.out.println("Moves should be found");
                 isLevelAlreadyCalculated(level);
                 bindMovesAsNodes(level);
                 moveTree.moveUp();

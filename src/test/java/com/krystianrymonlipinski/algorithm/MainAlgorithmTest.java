@@ -75,6 +75,9 @@ public class MainAlgorithmTest {
         assertEquals(testObj.getMoveTree().getRoot().getIndex(), testObj.getMoveTree().getCurrentNode().getIndex());
         assertEquals(7, testObj.getMoveTree().getNodes().size());
         for(Node<PositionState, Move<? extends Hop>> node : testObj.getMoveTree().getNodes()) {
+            if (moveTree.getCurrentNode() != moveTree.getRoot()) {
+                assertNotEquals(0, node.getState().getRewardFunctionOutcome());
+            }
             if (node.getLevel() == 2) {
                 assertEquals(getTile(8), node.getCondition().getMovingPiece().getPosition());
             }
@@ -108,6 +111,7 @@ public class MainAlgorithmTest {
     public void calculateTree_withCaptureInTheTree() {
         boardManager.addWhitePawn(28);
         boardManager.addBlackPawn(19);
+        boardManager.addWhitePawn(50);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
@@ -140,6 +144,7 @@ public class MainAlgorithmTest {
         assertEquals(0, moveTree.getCurrentNode().getChildren().size());
         assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getGameEngine().getGameState());
         assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getCurrentNode().getState().getGameState());
+        assertEquals(-100, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
     }
 
     @Test
@@ -164,6 +169,7 @@ public class MainAlgorithmTest {
         assertEquals(GameEngine.GameState.DRAWN, moveTree.getGameEngine().getGameState());
         assertEquals(GameEngine.GameState.DRAWN, moveTree.getCurrentNode().getState().getGameState());
         assertEquals(0, moveTree.getCurrentNode().getState().getDrawCounter());
+        assertEquals(0, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
 
         int[] numberOfNodesOnLevel = calculateNodesOnLevels(4);
 
