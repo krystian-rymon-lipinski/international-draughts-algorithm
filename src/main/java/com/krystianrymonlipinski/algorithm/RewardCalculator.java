@@ -24,12 +24,10 @@ public class RewardCalculator {
                 rewardOutcome = assessPieces(isPlayedColorWhite);
                 break;
             case WON_BY_BLACK:
-                if (isPlayedColorWhite) rewardOutcome = -100;
-                else                    rewardOutcome = 100;
+                rewardOutcome = -100;
                 break;
             case WON_BY_WHITE:
-                if (isPlayedColorWhite) rewardOutcome = 100;
-                else                    rewardOutcome = -100;
+                rewardOutcome = 100;
                 break;
             case DRAWN:
                 rewardOutcome = 0;
@@ -42,16 +40,10 @@ public class RewardCalculator {
     }
 
     public double assessPieces(boolean isPlayedColorWhite) {
-        double rewardOutcome = 0;
         double whitePiecesValue = calculateBasicPiecesValue(boardManager.getWhitePieces());
         double blackPiecesValue = calculateBasicPiecesValue(boardManager.getBlackPieces());
 
-        rewardOutcome = whitePiecesValue - blackPiecesValue;
-
-        if (!isPlayedColorWhite) {
-            rewardOutcome *= -1;
-        }
-        return rewardOutcome;
+        return whitePiecesValue - blackPiecesValue;
     }
 
     public double calculateBasicPiecesValue(ArrayList<Piece> pieces) {
