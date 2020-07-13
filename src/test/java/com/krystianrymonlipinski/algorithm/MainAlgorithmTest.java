@@ -111,7 +111,6 @@ public class MainAlgorithmTest {
     public void calculateTree_withCaptureInTheTree() {
         boardManager.addWhitePawn(28);
         boardManager.addBlackPawn(19);
-        boardManager.addWhitePawn(50);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
@@ -252,6 +251,34 @@ public class MainAlgorithmTest {
         assertEquals(1, numberOfNodesOnLevel[0]);
         assertEquals(2, numberOfNodesOnLevel[1]);
         assertEquals(2, numberOfNodesOnLevel[2]);
+    }
+
+    @Test
+    public void assessPosition_twoLevels_whiteToDecide() {
+        boardManager.addWhitePawn(6);
+        boardManager.addBlackPawn(33);
+        boardManager.addBlackPawn(42);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(2);
+        testObj.calculateTree();
+
+        Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
+        assertEquals(-1, childNode.getState().getRewardFunctionOutcome(), 0);
+    }
+
+    @Test
+    public void assessPosition_twoLevels_blackToDecide() {
+        boardManager.addBlackPawn(45);
+        boardManager.addWhitePawn(8);
+        boardManager.addWhitePawn(23);
+        moveTree.getGameEngine().setIsWhiteToMove(false);
+
+        testObj.setDepth(2);
+        testObj.calculateTree();
+
+        Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
+        assertEquals(1, childNode.getState().getRewardFunctionOutcome(), 0);
     }
 
 }

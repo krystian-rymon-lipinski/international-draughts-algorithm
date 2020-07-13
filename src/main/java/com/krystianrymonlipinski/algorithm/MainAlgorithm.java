@@ -54,23 +54,29 @@ public class MainAlgorithm {
     }
 
     private void bindMovesAsNodes(int maxLevel) {
-        if (moveTree.getCurrentNode().getLevel() < maxLevel) {
+        if (moveTree.getCurrentNode().getLevel() < maxLevel &&
+                moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
+
             ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
-            moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
-            if (moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
-
-                for (Move<? extends Hop> move : moves) {
-                    moveTree.addNode(moveTree.getCurrentNode(), move);
-                }
-
-                for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-                    moveTree.moveDown(node.getCondition());
-                    rewardCalculator.assessPosition(node, isPlayedColorWhite);
-                    bindMovesAsNodes(maxLevel);
-                    moveTree.moveUp();
-                }
+            for (Move<? extends Hop> move : moves) {
+                moveTree.addNode(moveTree.getCurrentNode(), move);
             }
+
+            for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+                moveTree.moveDown(node.getCondition());
+                bindMovesAsNodes(maxLevel);
+                moveTree.moveUp();
+            }
+            boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
+            if (isWhiteToMove) {
+                rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
+            } else {
+                rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
+            }
+
+        } else {
+            rewardCalculator.assessPosition(moveTree.getCurrentNode(), isPlayedColorWhite);
         }
     }
 

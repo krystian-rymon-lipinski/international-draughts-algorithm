@@ -17,11 +17,12 @@ public class RewardCalculator {
     }
 
     public void assessPosition(Node<PositionState, Move<? extends Hop>> node, boolean isPlayedColorWhite) {
+        System.out.println("Assessing position...");
         double rewardOutcome = 0;
 
         switch (node.getState().getGameState()) {
             case RUNNING:
-                rewardOutcome = assessPieces(isPlayedColorWhite);
+                rewardOutcome = assessPieces();
                 break;
             case WON_BY_BLACK:
                 rewardOutcome = -100;
@@ -36,10 +37,38 @@ public class RewardCalculator {
         }
 
         node.getState().setRewardFunctionOutcome(rewardOutcome);
-
+        System.out.println("Position assessed: " + rewardOutcome);
     }
 
-    public double assessPieces(boolean isPlayedColorWhite) {
+    public void findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+        System.out.println("Finding minimum...");
+        double minimum = Double.MAX_VALUE;
+
+        for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
+            if (child.getState().getRewardFunctionOutcome() < minimum) {
+                minimum = child.getState().getRewardFunctionOutcome();
+            }
+        }
+
+        ancestor.getState().setRewardFunctionOutcome(minimum);
+        System.out.println("Minimum found: " + minimum);
+    }
+
+    public void findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+        System.out.println("Finding maximum");
+        double maximum = Double.MIN_VALUE;
+
+        for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
+            if (child.getState().getRewardFunctionOutcome() > maximum) {
+                maximum = child.getState().getRewardFunctionOutcome();
+            }
+        }
+
+        ancestor.getState().setRewardFunctionOutcome(maximum);
+        System.out.println("Maximum found: " + maximum);
+    }
+
+    public double assessPieces() {
         double whitePiecesValue = calculateBasicPiecesValue(boardManager.getWhitePieces());
         double blackPiecesValue = calculateBasicPiecesValue(boardManager.getBlackPieces());
 
