@@ -99,6 +99,7 @@ public class MoveTreeTest {
 
         testObj.moveUp();
 
+        assertEquals(1, gameEngine.getBoardManager().getWhitePieces().size());
         assertFalse(move.getMovingPiece().isQueen());
     }
 

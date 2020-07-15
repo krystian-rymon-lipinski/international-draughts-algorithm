@@ -17,7 +17,6 @@ public class RewardCalculator {
     }
 
     public void assessPosition(Node<PositionState, Move<? extends Hop>> node, boolean isPlayedColorWhite) {
-        System.out.println("Assessing position...");
         double rewardOutcome = 0;
 
         switch (node.getState().getGameState()) {
@@ -37,11 +36,9 @@ public class RewardCalculator {
         }
 
         node.getState().setRewardFunctionOutcome(rewardOutcome);
-        System.out.println("Position assessed: " + rewardOutcome);
     }
 
     public void findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
-        System.out.println("Finding minimum...");
         double minimum = Double.MAX_VALUE;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
@@ -51,12 +48,10 @@ public class RewardCalculator {
         }
 
         ancestor.getState().setRewardFunctionOutcome(minimum);
-        System.out.println("Minimum found: " + minimum);
     }
 
     public void findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
-        System.out.println("Finding maximum");
-        double maximum = Double.MIN_VALUE;
+        double maximum = -Double.MAX_VALUE;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
             if (child.getState().getRewardFunctionOutcome() > maximum) {
@@ -65,7 +60,6 @@ public class RewardCalculator {
         }
 
         ancestor.getState().setRewardFunctionOutcome(maximum);
-        System.out.println("Maximum found: " + maximum);
     }
 
     public double assessPieces() {

@@ -265,6 +265,7 @@ public class MainAlgorithmTest {
 
         Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
         assertEquals(-1, childNode.getState().getRewardFunctionOutcome(), 0);
+        assertEquals(-1, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
     }
 
     @Test
@@ -279,6 +280,7 @@ public class MainAlgorithmTest {
 
         Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
         assertEquals(1, childNode.getState().getRewardFunctionOutcome(), 0);
+        assertEquals(1, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
     }
 
 }
