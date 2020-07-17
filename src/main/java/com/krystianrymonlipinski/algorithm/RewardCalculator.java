@@ -80,10 +80,24 @@ public class RewardCalculator {
 
     private double calculateQueenValue() {
         int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
-        return queenFunction(numberOfPieces);
+        return queenFunctionBasic(numberOfPieces);
     }
 
-    private double queenFunction(int numberOfPieces) {
+    private double queenFunctionBasic(int numberOfPieces) {
         return 3;
+    }
+
+    private double queenFunctionInterpolated(int numberOfPieces) {
+        double a4 = 3.20484 * Math.pow(10, -7);
+        double a3 = -8.2084 * Math.pow(10, -5);
+        double a2 = 0.0041;
+        double a1 = -0.0810;
+        double a0 = 3.3270;
+        return a4 * Math.pow(numberOfPieces, 4) +
+               a3 * Math.pow(numberOfPieces, 3) +
+               a2 * Math.pow(numberOfPieces, 2) +
+                a1 * numberOfPieces +
+                a0;
+
     }
 }
