@@ -109,6 +109,12 @@ public class MainAlgorithm {
                 moveTree.moveUp();
             }
         }
+        boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
+        if (isWhiteToMove) {
+            rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
+        } else {
+            rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
+        }
     }
 
     public void isLevelAlreadyCalculated(int level) throws ChosenLevelAlreadyCalculatedException {

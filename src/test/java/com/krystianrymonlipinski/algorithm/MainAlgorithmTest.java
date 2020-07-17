@@ -206,6 +206,7 @@ public class MainAlgorithmTest {
 
         assertEquals(5, moveTree.getNodes().size());
         assertEquals(2, numberOfNodesOnLevel[2]);
+        assertEquals(moveTree.getRoot(), moveTree.getCurrentNode());
     }
 
     @Test (expected = ChosenLevelAlreadyCalculatedException.class)
@@ -281,6 +282,23 @@ public class MainAlgorithmTest {
         Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
         assertEquals(1, childNode.getState().getRewardFunctionOutcome(), 0);
         assertEquals(1, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
+    }
+
+    @Test
+    public void assessPosition_afterCalculatingNewLevel() throws Exception {
+        boardManager.addWhitePawn(6);
+        boardManager.addBlackPawn(35);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(2);
+        testObj.calculateTree();
+
+        moveTree.setChildAsNewRoot(moveTree.getCurrentNode().getChildren().get(0));
+
+        assertEquals(2, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
+
+        testObj.calculateTreeLevel(2);
+        assertEquals(100, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
     }
 
 }
