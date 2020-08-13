@@ -5,7 +5,7 @@ import draughts.library.managers.GameEngine;
 
 public class PositionState {
 
-    private int rewardFunctionOutcome;
+    private double rewardFunctionOutcome;
     private GameEngine.GameState gameState;
     private DrawArbiter.DrawConditions drawConditions;
     private int drawCounter;
@@ -16,11 +16,11 @@ public class PositionState {
         this.drawCounter = gameEngine.getDrawArbiter().getDrawCounter();
     }
 
-    public int getRewardFunctionOutcome() {
+    public double getRewardFunctionOutcome() {
         return rewardFunctionOutcome;
     }
 
-    public void setRewardFunctionOutcome(int rewardFunctionOutcome) {
+    public void setRewardFunctionOutcome(double rewardFunctionOutcome) {
         this.rewardFunctionOutcome = rewardFunctionOutcome;
     }
 

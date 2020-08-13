@@ -11,6 +11,7 @@ public class MainAlgorithm {
 
     private int depth;
     private MoveTree moveTree;
+    private RewardCalculator rewardCalculator;
     private boolean isPlayedColorWhite;
 
     public MainAlgorithm(int depth) {
@@ -21,6 +22,7 @@ public class MainAlgorithm {
     public MainAlgorithm(int depth, GameEngine gameEngine) {
         this(depth);
         moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
+        rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
     }
 
     public int getDepth() {
@@ -39,30 +41,42 @@ public class MainAlgorithm {
         this.moveTree = moveTree;
     }
 
+    public boolean isPlayedColorWhite() {
+        return isPlayedColorWhite;
+    }
+
+    public void setPlayedColorWhite(boolean playedColorWhite) {
+        isPlayedColorWhite = playedColorWhite;
+    }
+
     public void calculateTree() {
         bindMovesAsNodes(depth);
     }
 
     private void bindMovesAsNodes(int maxLevel) {
-        System.out.println("Check if nodes should be bound");
-        if (moveTree.getCurrentNode().getLevel() < maxLevel) {
-            System.out.println("Binding nodes...");
+        if (moveTree.getCurrentNode().getLevel() < maxLevel &&
+                moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
+
             ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
-            moveTree.getCurrentNode().getState().setGameState(getMoveTree().getGameEngine().getGameState());
 
-            if (moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
-
-                for (Move<? extends Hop> move : moves) {
-                    moveTree.addNode(moveTree.getCurrentNode(), move);
-                }
-
-                for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-                    moveTree.moveDown(node.getCondition());
-                    //rewardCalculator.assessPosition();
-                    bindMovesAsNodes(maxLevel);
-                    moveTree.moveUp();
-                }
+            for (Move<? extends Hop> move : moves) {
+                moveTree.addNode(moveTree.getCurrentNode(), move);
             }
+
+            for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+                moveTree.moveDown(node.getCondition());
+                bindMovesAsNodes(maxLevel);
+                moveTree.moveUp();
+            }
+            boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
+            if (isWhiteToMove) {
+                rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
+            } else {
+                rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
+            }
+
+        } else {
+            rewardCalculator.assessPosition(moveTree.getCurrentNode(), isPlayedColorWhite);
         }
     }
 
@@ -84,18 +98,22 @@ public class MainAlgorithm {
     }
 
     public void travelThroughTree(int level) throws ChosenLevelAlreadyCalculatedException {
-        System.out.println("Travel through tree");
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
             moveTree.moveDown(node.getCondition());
             if (moveTree.getCurrentNode().getChildren().size() > 0) {
                 travelThroughTree(level);
             }
             else {
-                System.out.println("Moves should be found");
                 isLevelAlreadyCalculated(level);
                 bindMovesAsNodes(level);
                 moveTree.moveUp();
             }
+        }
+        boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
+        if (isWhiteToMove) {
+            rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
+        } else {
+            rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
         }
     }
 
