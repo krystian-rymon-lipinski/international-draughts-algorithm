@@ -1,3 +1,0 @@
-rootProject.name = 'international-draughts-algorithm'
-include 'international-draughts-library'
-include 'international-draughts-library:decision-tree-library'
