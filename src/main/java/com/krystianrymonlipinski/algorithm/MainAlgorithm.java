@@ -57,7 +57,9 @@ public class MainAlgorithm {
         if (moveTree.getCurrentNode().getLevel() < maxLevel &&
                 moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
 
-            ArrayList<Move<? extends Hop>> moves = moveTree.getGameEngine().prepareMove(moveTree.getGameEngine().getIsWhiteToMove());
+            ArrayList<Move<? extends Hop>> moves =
+                    moveTree.getGameEngine().getMoveManager().findAllCorrectMoves(
+                            moveTree.getGameEngine().getBoardManager(), moveTree.getGameEngine().getIsWhiteToMove());
 
             for (Move<? extends Hop> move : moves) {
                 moveTree.addNode(moveTree.getCurrentNode(), move);
