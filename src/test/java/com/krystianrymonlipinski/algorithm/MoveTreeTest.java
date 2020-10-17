@@ -63,6 +63,7 @@ public class MoveTreeTest {
         gameEngine.setIsWhiteToMove(true);
         Piece movingPiece = gameEngine.getBoardManager().addWhitePawn(9);
         Move<Hop> move = new Move<>(movingPiece, new Hop(getTile(9), getTile(4)));
+        move.classify();
 
         testObj.addNode(testObj.getCurrentNode(), move);
         testObj.moveDown(move);
@@ -91,6 +92,7 @@ public class MoveTreeTest {
         gameEngine.setIsWhiteToMove(true);
         Piece movingPiece = gameEngine.getBoardManager().addWhitePawn(9);
         Move<Hop> move = new Move<>(movingPiece, new Hop(getTile(9), getTile(4)));
+        move.classify();
 
         testObj.addNode(testObj.getCurrentNode(), move);
         testObj.moveDown(move);
@@ -113,6 +115,7 @@ public class MoveTreeTest {
         Move<Capture> move = new Move<>(movingPiece);
         move.addHop(new Capture(getTile(28), getTile(39), takenPiece1));
         move.addHop(new Capture(getTile(39), getTile(48), takenPiece2));
+        move.classify();
 
         testObj.addNode(testObj.getCurrentNode(), move);
         testObj.moveDown(move);

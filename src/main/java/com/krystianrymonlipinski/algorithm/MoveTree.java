@@ -5,7 +5,6 @@ import com.krystianrymonlipinski.exceptions.NodeConditionNotFoundException;
 import com.krystianrymonlipinski.exceptions.NodeWithNoChildrenException;
 import com.krystianrymonlipinski.tree.model.Node;
 import com.krystianrymonlipinski.tree.model.Tree;
-import draughts.library.boardmodel.Piece;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
@@ -45,15 +44,6 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
             super.moveDown(move);
             gameEngine.getBoardManager().makeWholeMove(move);
             gameEngine.finishMove(move);
-
-            if (move.getIsPromotion()) {
-                for (Node<PositionState, Move<? extends Hop>> child : currentNode.getAncestor().getChildren()) {
-                    if (!child.equals(currentNode) &&
-                            child.getCondition().getMovingPiece().getPosition().getIndex() == currentNode.getCondition().getMovingPiece().getPosition().getIndex()) {
-                        child.getCondition().setMovingPiece(move.getMovingPiece());
-                    }
-                }
-            }
             saveGameStateToNode();
 
         } catch(NodeWithNoChildrenException | NodeConditionNotFoundException ex) {
@@ -65,18 +55,9 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
         try {
             Node<PositionState, Move<? extends Hop>> previousNode = super.moveUp();
             readGameStateFromNode();
-            if (previousNode.getCondition().getIsPromotion()) {
-                Piece demotedPawn = gameEngine.getBoardManager().demoteQueen(previousNode.getCondition().getMovingPiece());
-                for (Node<PositionState, Move<? extends Hop>> child : currentNode.getChildren()) {
-                    if (!child.equals(previousNode) &&
-                            child.getCondition().getMovingPiece().equals(previousNode.getCondition().getMovingPiece())) {
-                        child.getCondition().setMovingPiece(demotedPawn);
-                    }
-                }
-                previousNode.getCondition().setMovingPiece(demotedPawn);
-            }
+
             gameEngine.getBoardManager().reverseWholeMove(previousNode.getCondition());
-            gameEngine.changeColor();
+            gameEngine.endPlayerTurn();
 
             return previousNode;
         } catch (NoAncestorForRootNodeException ex) {
