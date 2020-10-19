@@ -1,6 +1,5 @@
 package com.krystianrymonlipinski.algorithm;
 
-import com.krystianrymonlipinski.exceptions.NoAncestorForRootNodeException;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
 import draughts.library.boardmodel.Tile;
@@ -136,6 +135,7 @@ public class MainAlgorithmTest {
         whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(23)));
         Move<Capture> blackMove = new Move<>(blackPiece);
         blackMove.addHop(new Capture(blackPiece.getPosition(), getTile(28), whitePiece));
+        blackMove.classify();
 
         testObj.getMoveTree().moveDown(whiteMove);
         testObj.getMoveTree().moveDown(blackMove);
