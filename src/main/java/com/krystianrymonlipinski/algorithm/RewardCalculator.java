@@ -38,6 +38,11 @@ public class RewardCalculator {
         node.getState().setRewardFunctionOutcome(rewardOutcome);
     }
 
+    public void findBestChild(Node<PositionState, Move<? extends Hop>> ancestor, boolean isNodeMaximizing) {
+        if (isNodeMaximizing) findMaximumChild(ancestor);
+        else                  findMinimumChild(ancestor);
+    }
+
     public void findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double minimum = Double.MAX_VALUE;
 

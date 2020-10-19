@@ -70,12 +70,8 @@ public class MainAlgorithm {
                 bindMovesAsNodes(maxLevel);
                 moveTree.moveUp();
             }
-            boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
-            if (isWhiteToMove) {
-                rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
-            } else {
-                rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
-            }
+            boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+            rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
 
         } else {
             rewardCalculator.assessPosition(moveTree.getCurrentNode(), isPlayedColorWhite);
@@ -111,12 +107,8 @@ public class MainAlgorithm {
                 moveTree.moveUp();
             }
         }
-        boolean isWhiteToMove = moveTree.getGameEngine().getIsWhiteToMove();
-        if (isWhiteToMove) {
-            rewardCalculator.findMaximumChild(moveTree.getCurrentNode());
-        } else {
-            rewardCalculator.findMinimumChild(moveTree.getCurrentNode());
-        }
+        boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+        rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
     }
 
     public void isLevelAlreadyCalculated(int level) throws ChosenLevelAlreadyCalculatedException {
