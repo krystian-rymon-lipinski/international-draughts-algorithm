@@ -179,6 +179,29 @@ public class MainAlgorithmTest {
     }
 
     @Test
+    public void calculateTree_withPromotionsInTheTree() {
+        boardManager.addWhitePawn(8);
+        boardManager.addBlackPawn(42);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(2);
+        testObj.calculateTree();
+
+        assertEquals(1, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
+        assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
+
+        moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
+
+        assertEquals(1, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
+        assertTrue(moveTree.getGameEngine().getBoardManager().getWhitePieces().get(0).isQueen());
+
+        moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
+
+        assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
+        assertTrue(moveTree.getGameEngine().getBoardManager().getBlackPieces().get(0).isQueen());
+    }
+
+    @Test
     public void calculateTreeLevel() throws Exception {
         Piece whitePiece = boardManager.addWhitePawn(32);
         boardManager.addBlackPawn(17);
@@ -252,53 +275,6 @@ public class MainAlgorithmTest {
         assertEquals(1, numberOfNodesOnLevel[0]);
         assertEquals(2, numberOfNodesOnLevel[1]);
         assertEquals(2, numberOfNodesOnLevel[2]);
-    }
-
-    @Test
-    public void assessPosition_twoLevels_whiteToDecide() {
-        boardManager.addWhitePawn(6);
-        boardManager.addBlackPawn(33);
-        boardManager.addBlackPawn(42);
-        moveTree.getGameEngine().setIsWhiteToMove(true);
-
-        testObj.setDepth(2);
-        testObj.calculateTree();
-
-        Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
-        assertEquals(-1, childNode.getState().getRewardFunctionOutcome(), 0);
-        assertEquals(-1, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
-    }
-
-    @Test
-    public void assessPosition_twoLevels_blackToDecide() {
-        boardManager.addBlackPawn(45);
-        boardManager.addWhitePawn(8);
-        boardManager.addWhitePawn(23);
-        moveTree.getGameEngine().setIsWhiteToMove(false);
-
-        testObj.setDepth(2);
-        testObj.calculateTree();
-
-        Node<PositionState, Move<? extends Hop>> childNode = moveTree.getCurrentNode().getChildren().get(0);
-        assertEquals(1, childNode.getState().getRewardFunctionOutcome(), 0);
-        assertEquals(1, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
-    }
-
-    @Test
-    public void assessPosition_afterCalculatingNewLevel() throws Exception {
-        boardManager.addWhitePawn(6);
-        boardManager.addBlackPawn(35);
-        moveTree.getGameEngine().setIsWhiteToMove(true);
-
-        testObj.setDepth(2);
-        testObj.calculateTree();
-
-        moveTree.setChildAsNewRoot(moveTree.getCurrentNode().getChildren().get(0));
-
-        assertEquals(2, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
-
-        testObj.calculateTreeLevel(2);
-        assertEquals(100, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
     }
 
 }
