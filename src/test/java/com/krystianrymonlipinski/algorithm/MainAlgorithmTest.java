@@ -180,6 +180,7 @@ public class MainAlgorithmTest {
 
     @Test
     public void calculateTree_withPromotionsInTheTree() {
+        boardManager.addWhitePawn(7);
         boardManager.addWhitePawn(8);
         boardManager.addBlackPawn(42);
         moveTree.getGameEngine().setIsWhiteToMove(true);
@@ -187,18 +188,16 @@ public class MainAlgorithmTest {
         testObj.setDepth(2);
         testObj.calculateTree();
 
-        assertEquals(1, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
+        assertEquals(2, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
         assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
 
         moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
 
-        assertEquals(1, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
-        assertTrue(moveTree.getGameEngine().getBoardManager().getWhitePieces().get(0).isQueen());
+        assertEquals(2, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
 
         moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
 
         assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
-        assertTrue(moveTree.getGameEngine().getBoardManager().getBlackPieces().get(0).isQueen());
     }
 
     @Test
