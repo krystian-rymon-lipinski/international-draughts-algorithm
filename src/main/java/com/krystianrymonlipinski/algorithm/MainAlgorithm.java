@@ -117,5 +117,14 @@ public class MainAlgorithm {
         }
     }
 
+    public Move<? extends Hop> findBestMove() {
+        for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+            if (node.getState().getRewardFunctionOutcome() == moveTree.getCurrentNode().getState().getRewardFunctionOutcome())
+                return node.getCondition();
+        }
+
+        return null;
+    }
+
 
 }

@@ -276,4 +276,23 @@ public class MainAlgorithmTest {
         assertEquals(2, numberOfNodesOnLevel[2]);
     }
 
+    @Test
+    public void findBestContinuation() {
+        boardManager.createEmptyBoard();
+
+        boardManager.addWhitePawn(9);
+        boardManager.addBlackPawn(12);
+        boardManager.addBlackPawn(26);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(6);
+        testObj.calculateTree();
+        assertNotEquals(0, moveTree.getCurrentNode().getState().getRewardFunctionOutcome());
+
+        Move<? extends Hop> bestMove = testObj.findBestMove();
+        testObj.getMoveTree().moveDown(bestMove);
+
+        assertEquals(getTile(4), bestMove.getMovingPiece().getPosition());
+    }
+
 }
