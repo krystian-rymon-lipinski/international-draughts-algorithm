@@ -277,7 +277,7 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void findBestContinuation() {
+    public void findBestMove_promotionOnRightTile() {
         boardManager.createEmptyBoard();
 
         boardManager.addWhitePawn(9);
@@ -293,6 +293,91 @@ public class MainAlgorithmTest {
         testObj.getMoveTree().moveDown(bestMove);
 
         assertEquals(getTile(4), bestMove.getMovingPiece().getPosition());
+        assertEquals(getTile(4), moveTree.getCurrentNode().getCondition().getMovingPiece().getPosition());
+    }
+
+    @Test
+    public void findBestMove_pawnCaptureTactic() {
+        boardManager.createEmptyBoard();
+
+        boardManager.addWhitePawn(33);
+        boardManager.addWhitePawn(36);
+        boardManager.addWhitePawn(38);
+        boardManager.addWhitePawn(39);
+        boardManager.addWhitePawn(44);
+        boardManager.addBlackPawn(16);
+        boardManager.addBlackPawn(18);
+        boardManager.addBlackPawn(21);
+        boardManager.addBlackPawn(26);
+        moveTree.getGameEngine().setIsWhiteToMove(false);
+
+        testObj.setDepth(4);
+        testObj.calculateTree();
+
+        Move<? extends Hop> bestMove = testObj.findBestMove();
+        testObj.getMoveTree().moveDown(bestMove);
+
+        assertEquals(getTile(31), bestMove.getMovingPiece().getPosition());
+        assertEquals(getTile(31), moveTree.getCurrentNode().getCondition().getMovingPiece().getPosition());
+
+    }
+
+    @Test
+    public void findBestMove_preventPawnCaptureTactic() {
+        boardManager.createEmptyBoard();
+
+        boardManager.addWhitePawn(33);
+        boardManager.addWhitePawn(36);
+        boardManager.addWhitePawn(38);
+        boardManager.addWhitePawn(39);
+        boardManager.addWhitePawn(44);
+        boardManager.addBlackPawn(16);
+        boardManager.addBlackPawn(18);
+        boardManager.addBlackPawn(21);
+        boardManager.addBlackPawn(26);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(4);
+        testObj.calculateTree();
+
+        Move<? extends Hop> bestMove = testObj.findBestMove();
+        testObj.getMoveTree().moveDown(bestMove);
+
+        assertEquals(getTile(32), bestMove.getMovingPiece().getPosition());
+        assertEquals(getTile(32), moveTree.getCurrentNode().getCondition().getMovingPiece().getPosition());
+    }
+
+    @Test
+    public void findBestMove_preventPawnCaptureTactic_searchDeeper() {
+        boardManager.createEmptyBoard();
+
+        boardManager.addWhitePawn(33);
+        boardManager.addWhitePawn(36);
+        boardManager.addWhitePawn(38);
+        boardManager.addWhitePawn(39);
+        boardManager.addWhitePawn(44);
+        boardManager.addBlackPawn(16);
+        boardManager.addBlackPawn(18);
+        boardManager.addBlackPawn(21);
+        boardManager.addBlackPawn(26);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(6);
+        testObj.calculateTree();
+
+        Move<? extends Hop> bestMove = testObj.findBestMove();
+        testObj.getMoveTree().moveDown(bestMove);
+
+        assertEquals(getTile(31), bestMove.getMovingPiece().getPosition());
+        assertEquals(getTile(31), moveTree.getCurrentNode().getCondition().getMovingPiece().getPosition());
+
+        testObj.getMoveTree().moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
+
+        Move<? extends Hop> nextBestMove = testObj.findBestMove();
+        testObj.getMoveTree().moveDown(nextBestMove);
+
+        assertEquals(getTile(32), nextBestMove.getMovingPiece().getPosition());
+        assertEquals(getTile(32), moveTree.getCurrentNode().getCondition().getMovingPiece().getPosition());
     }
 
 }
