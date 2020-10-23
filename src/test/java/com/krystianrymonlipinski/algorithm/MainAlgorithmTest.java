@@ -223,7 +223,7 @@ public class MainAlgorithmTest {
         assertEquals(2, numberOfNodesOnLevel[1]);
         assertEquals(0, numberOfNodesOnLevel[2]);
 
-        testObj.calculateTreeLevel(2);
+        testObj.calculateNextTreeLevel(2);
         numberOfNodesOnLevel = calculateNodesOnLevels(3);
 
         assertEquals(5, moveTree.getNodes().size());
@@ -244,7 +244,7 @@ public class MainAlgorithmTest {
         whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(27)));
 
         testObj.updateTreeAfterMove(whiteMove);
-        testObj.calculateTreeLevel(1);
+        testObj.calculateNextTreeLevel(1);
     }
 
     @Test
@@ -266,7 +266,7 @@ public class MainAlgorithmTest {
         moveTree.moveDown(blackMove);
 
         moveTree.returnToRoot();
-        testObj.calculateTreeLevel(2);
+        testObj.calculateNextTreeLevel(2);
 
         int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
 
