@@ -51,6 +51,7 @@ public class MainAlgorithm {
 
     public void calculateTree() {
         bindMovesAsNodes(depth);
+        System.out.println("Calculated nodes for the whole tree: " + moveTree.getNodes().size());
     }
 
     private void bindMovesAsNodes(int maxLevel) {
@@ -79,36 +80,38 @@ public class MainAlgorithm {
     }
 
     public void updateTreeAfterMove(Move<? extends Hop> move) {
-        moveTree.moveDown(move);
-        moveTree.setChildAsNewRoot(moveTree.getCurrentNode());
+        moveTree.moveDownAndSetChildAsNewRoot(move);
     }
 
-    public void calculateTreeLevel(int level) throws ChosenLevelAlreadyCalculatedException {
-        if (level <= depth) {
-            if (moveTree.getCurrentNode().getChildren().size() > 0) {
-                travelThroughTree(level);
+    public void calculateNextTreeLevel(int levelToCalculate) throws ChosenLevelAlreadyCalculatedException {
+        System.out.println("Nodes before calculated level: " + moveTree.getNodes().size());
+        if (levelToCalculate <= depth) {
+            if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
+                bindMovesAsNodes(levelToCalculate);
             }
             else {
-                isLevelAlreadyCalculated(level);
-                bindMovesAsNodes(level);
+                travelThroughTree(levelToCalculate);
             }
         }
+
+        System.out.println("Nodes after calculated level: " + moveTree.getNodes().size());
     }
 
-    public void travelThroughTree(int level) throws ChosenLevelAlreadyCalculatedException {
+    public void travelThroughTree(int levelToCalculate) throws ChosenLevelAlreadyCalculatedException {
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+
             moveTree.moveDown(node.getCondition());
-            if (moveTree.getCurrentNode().getChildren().size() > 0) {
-                travelThroughTree(level);
+            if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
+                bindMovesAsNodes(levelToCalculate);
             }
             else {
-                isLevelAlreadyCalculated(level);
-                bindMovesAsNodes(level);
-                moveTree.moveUp();
+                travelThroughTree(levelToCalculate);
             }
+            boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+            rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
+            moveTree.moveUp();
         }
-        boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
-        rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
+
     }
 
     public void isLevelAlreadyCalculated(int level) throws ChosenLevelAlreadyCalculatedException {
@@ -118,12 +121,8 @@ public class MainAlgorithm {
     }
 
     public Move<? extends Hop> findBestMove() {
-        for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-            if (node.getState().getRewardFunctionOutcome() == moveTree.getCurrentNode().getState().getRewardFunctionOutcome())
-                return node.getCondition();
-        }
-
-        return null;
+        return rewardCalculator.findBestChild(moveTree.getCurrentNode(), moveTree.getGameEngine().getIsWhiteToMove()).
+                getCondition();
     }
 
 
