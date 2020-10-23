@@ -38,33 +38,40 @@ public class RewardCalculator {
         node.getState().setRewardFunctionOutcome(rewardOutcome);
     }
 
-    public void findBestChild(Node<PositionState, Move<? extends Hop>> ancestor, boolean isNodeMaximizing) {
-        if (isNodeMaximizing) findMaximumChild(ancestor);
-        else                  findMinimumChild(ancestor);
+    public Node<PositionState, Move<? extends Hop>> findBestChild(Node<PositionState, Move<? extends Hop>> ancestor,
+                                                                  boolean isNodeMaximizing) {
+        if (isNodeMaximizing) return findMaximumChild(ancestor);
+        else                  return findMinimumChild(ancestor);
     }
 
-    public void findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    public Node<PositionState, Move<? extends Hop>> findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double minimum = Double.MAX_VALUE;
+        Node<PositionState, Move<? extends Hop>> currentMinimumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
             if (child.getState().getRewardFunctionOutcome() < minimum) {
                 minimum = child.getState().getRewardFunctionOutcome();
+                currentMinimumChild = child;
             }
         }
 
         ancestor.getState().setRewardFunctionOutcome(minimum);
+        return currentMinimumChild;
     }
 
-    public void findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    public Node<PositionState, Move<? extends Hop>> findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double maximum = -Double.MAX_VALUE;
+        Node<PositionState, Move<? extends Hop>> currentMaximumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
             if (child.getState().getRewardFunctionOutcome() > maximum) {
                 maximum = child.getState().getRewardFunctionOutcome();
+                currentMaximumChild = child;
             }
         }
 
         ancestor.getState().setRewardFunctionOutcome(maximum);
+        return currentMaximumChild;
     }
 
     public double assessPieces() {
