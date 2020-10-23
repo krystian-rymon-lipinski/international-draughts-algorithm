@@ -78,14 +78,14 @@ public class RewardCalculator {
         double value = 0;
         for (Piece piece : pieces) {
             if (piece.isQueen()) value += calculateQueenValue();
-            else                 value += 1;
+            else                 value += 1 * pawnRowFunction(piece);
         }
         return value;
     }
 
     private double calculateQueenValue() {
         int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
-        return queenFunctionBasic(numberOfPieces);
+        return queenFunctionInterpolated(numberOfPieces);
     }
 
     private double queenFunctionBasic(int numberOfPieces) {
@@ -104,5 +104,17 @@ public class RewardCalculator {
                 a1 * numberOfPieces +
                 a0;
 
+    }
+
+    private double pawnRowFunction(Piece piece) {
+        int row = piece.getPosition().getRow();
+        if (piece.isWhite()) {
+            if (row >=6) return 1; //white side of the board
+            else         return Math.pow( (Math.abs(row-11) - 5), 0.1666);
+        }
+        else {
+            if (row <=5) return 1; //black side of the board
+            else         return Math.pow( row-5, 0.1666);
+        }
     }
 }
