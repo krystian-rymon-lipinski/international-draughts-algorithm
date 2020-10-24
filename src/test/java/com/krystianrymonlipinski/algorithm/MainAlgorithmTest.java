@@ -231,22 +231,6 @@ public class MainAlgorithmTest {
         assertEquals(moveTree.getRoot(), moveTree.getCurrentNode());
     }
 
-    @Test (expected = ChosenLevelAlreadyCalculatedException.class)
-    public void calculateTreeLevel_levelAlreadyCalculated() throws ChosenLevelAlreadyCalculatedException {
-        Piece whitePiece = boardManager.addWhitePawn(32);
-        boardManager.addBlackPawn(17);
-        moveTree.getGameEngine().setIsWhiteToMove(true);
-
-        testObj.setDepth(2);
-        testObj.calculateTree();
-
-        Move<Hop> whiteMove = new Move<>(whitePiece);
-        whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(27)));
-
-        testObj.updateTreeAfterMove(whiteMove);
-        testObj.calculateNextTreeLevel(1);
-    }
-
     @Test
     public void calculateTreeLevel_fromCurrentNodeDifferentThanRoot() throws Exception {
         Piece whitePiece = boardManager.addWhitePawn(32);

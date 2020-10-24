@@ -114,12 +114,6 @@ public class MainAlgorithm {
 
     }
 
-    public void isLevelAlreadyCalculated(int level) throws ChosenLevelAlreadyCalculatedException {
-        if (moveTree.getCurrentNode().getLevel() >= level) {
-            throw new ChosenLevelAlreadyCalculatedException("Level " + level + " is already calculated!");
-        }
-    }
-
     public Move<? extends Hop> findBestMove() {
         return rewardCalculator.findBestChild(moveTree.getCurrentNode(), moveTree.getGameEngine().getIsWhiteToMove()).
                 getCondition();
