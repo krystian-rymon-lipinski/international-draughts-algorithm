@@ -12,7 +12,6 @@ public class MainAlgorithm {
     private int depth;
     private MoveTree moveTree;
     private RewardCalculator rewardCalculator;
-    private boolean isPlayedColorWhite;
 
     public MainAlgorithm(int depth) {
         this.depth = depth;
@@ -41,14 +40,6 @@ public class MainAlgorithm {
         this.moveTree = moveTree;
     }
 
-    public boolean isPlayedColorWhite() {
-        return isPlayedColorWhite;
-    }
-
-    public void setPlayedColorWhite(boolean playedColorWhite) {
-        isPlayedColorWhite = playedColorWhite;
-    }
-
     public void calculateTree() {
         bindMovesAsNodes(depth);
         System.out.println("Calculated nodes for the whole tree: " + moveTree.getNodes().size());
@@ -75,7 +66,7 @@ public class MainAlgorithm {
             rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
 
         } else {
-            rewardCalculator.assessPosition(moveTree.getCurrentNode(), isPlayedColorWhite);
+            rewardCalculator.assessPosition(moveTree.getCurrentNode());
         }
     }
 
@@ -83,7 +74,7 @@ public class MainAlgorithm {
         moveTree.moveDownAndSetChildAsNewRoot(move);
     }
 
-    public void calculateNextTreeLevel(int levelToCalculate) throws ChosenLevelAlreadyCalculatedException {
+    public void calculateNextTreeLevel(int levelToCalculate) {
         System.out.println("Nodes before calculated level: " + moveTree.getNodes().size());
         if (levelToCalculate <= depth) {
             if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
@@ -97,7 +88,7 @@ public class MainAlgorithm {
         System.out.println("Nodes after calculated level: " + moveTree.getNodes().size());
     }
 
-    public void travelThroughTree(int levelToCalculate) throws ChosenLevelAlreadyCalculatedException {
+    public void travelThroughTree(int levelToCalculate) {
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
 
             moveTree.moveDown(node.getCondition());

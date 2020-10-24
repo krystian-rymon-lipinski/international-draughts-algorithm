@@ -28,7 +28,6 @@ public class MainAlgorithmTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.setGameState(GameEngine.GameState.RUNNING);
         testObj = new MainAlgorithm(10, gameEngine);
-        testObj.setPlayedColorWhite(true);
         moveTree = testObj.getMoveTree();
         boardManager = moveTree.getGameEngine().getBoardManager();
         boardManager.createEmptyBoard();

@@ -16,7 +16,7 @@ public class RewardCalculator {
         this.boardManager = boardManager;
     }
 
-    public void assessPosition(Node<PositionState, Move<? extends Hop>> node, boolean isPlayedColorWhite) {
+    public void assessPosition(Node<PositionState, Move<? extends Hop>> node) {
         double rewardOutcome = 0;
 
         switch (node.getState().getGameState()) {
