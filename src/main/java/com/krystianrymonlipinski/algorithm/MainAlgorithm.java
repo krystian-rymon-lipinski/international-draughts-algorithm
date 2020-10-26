@@ -98,11 +98,12 @@ public class MainAlgorithm {
             else {
                 travelThroughTree(levelToCalculate);
             }
-            boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
-            rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
             moveTree.moveUp();
         }
-
+        boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+        if (!moveTree.getCurrentNode().getChildren().isEmpty()) {
+            rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
+        }
     }
 
     public Move<? extends Hop> findBestMove() {
