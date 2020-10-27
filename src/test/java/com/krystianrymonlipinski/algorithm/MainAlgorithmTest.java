@@ -200,7 +200,7 @@ public class MainAlgorithmTest {
     }
 
     @Test
-    public void calculateTreeLevel() throws Exception {
+    public void calculateTreeLevel() {
         Piece whitePiece = boardManager.addWhitePawn(32);
         boardManager.addBlackPawn(17);
         moveTree.getGameEngine().setIsWhiteToMove(true);
@@ -210,8 +210,9 @@ public class MainAlgorithmTest {
 
         Move<Hop> whiteMove = new Move<>(whitePiece);
         whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(27)));
+        testObj.getMoveTree().moveDown(whiteMove);
 
-        testObj.updateTreeAfterMove(whiteMove);
+        testObj.updateTreeAfterMove();
 
         assertEquals(3, moveTree.getNodes().size());
 
@@ -228,35 +229,6 @@ public class MainAlgorithmTest {
         assertEquals(5, moveTree.getNodes().size());
         assertEquals(2, numberOfNodesOnLevel[2]);
         assertEquals(moveTree.getRoot(), moveTree.getCurrentNode());
-    }
-
-    @Test
-    public void calculateTreeLevel_fromCurrentNodeDifferentThanRoot() throws Exception {
-        Piece whitePiece = boardManager.addWhitePawn(32);
-        Piece blackPiece = boardManager.addBlackPawn(17);
-        moveTree.getGameEngine().setIsWhiteToMove(true);
-
-        testObj.setDepth(2);
-        testObj.calculateTree();
-
-        Move<Hop> whiteMove = new Move<>(whitePiece);
-        whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(27)));
-
-        testObj.updateTreeAfterMove(whiteMove);
-
-        Move<Hop> blackMove = new Move<>(blackPiece);
-        blackMove.addHop(new Hop(blackPiece.getPosition(), getTile(21)));
-        moveTree.moveDown(blackMove);
-
-        moveTree.returnToRoot();
-        testObj.calculateNextTreeLevel(2);
-
-        int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
-
-        assertEquals(0, moveTree.getCurrentNode().getLevel());
-        assertEquals(1, numberOfNodesOnLevel[0]);
-        assertEquals(2, numberOfNodesOnLevel[1]);
-        assertEquals(2, numberOfNodesOnLevel[2]);
     }
 
     @Test

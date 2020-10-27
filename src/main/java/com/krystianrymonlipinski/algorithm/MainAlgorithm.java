@@ -42,7 +42,6 @@ public class MainAlgorithm {
 
     public void calculateTree() {
         bindMovesAsNodes(depth);
-        System.out.println("Calculated nodes for the whole tree: " + moveTree.getNodes().size());
     }
 
     private void bindMovesAsNodes(int maxLevel) {
@@ -70,12 +69,11 @@ public class MainAlgorithm {
         }
     }
 
-    public void updateTreeAfterMove(Move<? extends Hop> move) {
-        moveTree.moveDownAndSetChildAsNewRoot(move);
+    public void updateTreeAfterMove() {
+        moveTree.setCurrentNodeAsRoot();
     }
 
     public void calculateNextTreeLevel(int levelToCalculate) {
-        System.out.println("Nodes before calculated level: " + moveTree.getNodes().size());
         if (levelToCalculate <= depth) {
             if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
                 bindMovesAsNodes(levelToCalculate);
@@ -84,8 +82,6 @@ public class MainAlgorithm {
                 travelThroughTree(levelToCalculate);
             }
         }
-
-        System.out.println("Nodes after calculated level: " + moveTree.getNodes().size());
     }
 
     public void travelThroughTree(int levelToCalculate) {
