@@ -15,12 +15,12 @@ public class MainAlgorithm {
 
     public MainAlgorithm(int depth) {
         this.depth = depth;
-        moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), new GameEngine());
+        moveTree = new MoveTree(new Node<>(), new GameEngine());
     }
 
     public MainAlgorithm(int depth, GameEngine gameEngine) {
         this(depth);
-        moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
+        moveTree = new MoveTree(new Node<>(), gameEngine);
         rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
     }
 
@@ -74,13 +74,11 @@ public class MainAlgorithm {
     }
 
     public void calculateNextTreeLevel(int levelToCalculate) {
-        if (levelToCalculate <= depth) {
-            if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
-                bindMovesAsNodes(levelToCalculate);
-            }
-            else {
-                travelThroughTree(levelToCalculate);
-            }
+        if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
+            bindMovesAsNodes(levelToCalculate);
+        }
+        else {
+            travelThroughTree(levelToCalculate);
         }
     }
 

@@ -6,13 +6,14 @@ import draughts.library.boardmodel.Tile;
 import draughts.library.managers.BoardManager;
 import draughts.library.managers.DrawArbiter;
 import draughts.library.managers.GameEngine;
-import draughts.library.movemodel.Capture;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -37,26 +38,45 @@ public class MainAlgorithmTest {
         return boardManager.findTileByIndex(index);
     }
 
-    public int[] calculateNodesOnLevels(int numberOfLevels) {
-        int[] numberOfNodesOnLevel = new int[numberOfLevels];
-        for(Node<PositionState, Move<? extends Hop>> node : testObj.getMoveTree().getNodes()) {
-            numberOfNodesOnLevel[node.getLevel()]++;
+    public ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> countTreeNodes(int numberOfLevels) {
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels = new ArrayList<>();
+        for (int i=0; i<=numberOfLevels; i++) { //include root as level 0
+            nodesOnLevels.add(new ArrayList<>());
         }
-        return numberOfNodesOnLevel;
+        iterate(nodesOnLevels);
+        return nodesOnLevels;
+    }
+
+    public void iterate(ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels) {
+        for (Node<PositionState, Move<? extends Hop>> child : moveTree.getCurrentNode().getChildren()) {
+            moveTree.moveDown(child.getCondition());
+            iterate(nodesOnLevels);
+            moveTree.moveUp();
+        }
+
+        int levelDifference = moveTree.getCurrentNode().getLevel() - moveTree.getRoot().getLevel();
+        nodesOnLevels.get(levelDifference).add(moveTree.getCurrentNode());
     }
 
     @Test
     public void calculateTree_oneLevelDeep() {
-        boardManager.addWhitePawn(28);
+        Piece whitePawn = boardManager.addWhitePawn(28);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(1);
         testObj.calculateTree();
 
-        assertEquals(testObj.getMoveTree().getRoot().getIndex(), testObj.getMoveTree().getCurrentNode().getIndex());
-        assertEquals(3, testObj.getMoveTree().getNodes().size());
-        for(Node<PositionState, Move<? extends Hop>> node : testObj.getMoveTree().getCurrentNode().getChildren()) {
-            assertEquals(getTile(28), node.getCondition().getMovingPiece().getPosition());
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(1);
+
+
+        assertEquals(testObj.getMoveTree().getRoot(), testObj.getMoveTree().getCurrentNode());
+
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(2, nodesOnLevels.get(1).size());
+
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(1)) {
+            assertEquals(whitePawn, node.getCondition().getMovingPiece());
             assertNotEquals(0, node.getState().getRewardFunctionOutcome());
         }
     }
@@ -64,21 +84,22 @@ public class MainAlgorithmTest {
     @Test
     public void calculateTree_twoLevelsDeep() {
         boardManager.addWhitePawn(28);
-        boardManager.addBlackPawn(8);
+        Piece blackPawn = boardManager.addBlackPawn(8);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
         testObj.calculateTree();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(2);
 
-        assertEquals(testObj.getMoveTree().getRoot().getIndex(), testObj.getMoveTree().getCurrentNode().getIndex());
-        assertEquals(7, testObj.getMoveTree().getNodes().size());
-        for(Node<PositionState, Move<? extends Hop>> node : testObj.getMoveTree().getNodes()) {
-            if (moveTree.getCurrentNode() != moveTree.getRoot()) {
-                assertNotEquals(0, node.getState().getRewardFunctionOutcome());
-            }
-            if (node.getLevel() == 2) {
-                assertEquals(getTile(8), node.getCondition().getMovingPiece().getPosition());
-            }
+        assertEquals(testObj.getMoveTree().getRoot(), testObj.getMoveTree().getCurrentNode());
+
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(2, nodesOnLevels.get(1).size());
+        assertEquals(4, nodesOnLevels.get(2).size());
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(2)) {
+            assertEquals(blackPawn, node.getCondition().getMovingPiece());
+            assertNotEquals(0, node.getState().getRewardFunctionOutcome());
         }
     }
 
@@ -90,19 +111,18 @@ public class MainAlgorithmTest {
 
         testObj.setDepth(6);
         testObj.calculateTree();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(6);
 
         assertEquals(testObj.getMoveTree().getRoot().getIndex(), testObj.getMoveTree().getCurrentNode().getIndex());
-        assertEquals(52, testObj.getMoveTree().getNodes().size());
 
-        int[] numberOfNodesOnLevel = calculateNodesOnLevels(7);
-
-        assertEquals(1, numberOfNodesOnLevel[0]);
-        assertEquals(1, numberOfNodesOnLevel[1]);
-        assertEquals(2, numberOfNodesOnLevel[2]);
-        assertEquals(4, numberOfNodesOnLevel[3]);
-        assertEquals(8, numberOfNodesOnLevel[4]);
-        assertEquals(12, numberOfNodesOnLevel[5]);
-        assertEquals(24, numberOfNodesOnLevel[6]);
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(1, nodesOnLevels.get(1).size());
+        assertEquals(2, nodesOnLevels.get(2).size());
+        assertEquals(4, nodesOnLevels.get(3).size());
+        assertEquals(8, nodesOnLevels.get(4).size());
+        assertEquals(12, nodesOnLevels.get(5).size());
+        assertEquals(24, nodesOnLevels.get(6).size());
     }
 
     @Test
@@ -113,68 +133,77 @@ public class MainAlgorithmTest {
 
         testObj.setDepth(2);
         testObj.calculateTree();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(2);
 
-        int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(2, nodesOnLevels.get(1).size());
+        assertEquals(3, nodesOnLevels.get(2).size());
 
-        assertEquals(1, numberOfNodesOnLevel[0]);
-        assertEquals(2, numberOfNodesOnLevel[1]);
-        assertEquals(3, numberOfNodesOnLevel[2]);
+        int numberOfNodesWithCapture = 0;
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(2)) {
+            if (node.getCondition().isCapture()) numberOfNodesWithCapture++;
+        }
+        assertEquals(1, numberOfNodesWithCapture);
     }
 
     @Test
     public void calculateTree_withPossibilityOfWinningInTheTree() {
-        Piece whitePiece = boardManager.addWhitePawn(28);
-        Piece blackPiece = boardManager.addBlackPawn(19);
+        boardManager.addWhitePawn(28);
+        boardManager.addBlackPawn(19);
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(3);
         testObj.calculateTree();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(3);
 
-        Move<Hop> whiteMove = new Move<>(whitePiece);
-        whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(23)));
-        Move<Capture> blackMove = new Move<>(blackPiece);
-        blackMove.addHop(new Capture(blackPiece.getPosition(), getTile(28), whitePiece));
-        blackMove.classify();
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(2, nodesOnLevels.get(1).size());
+        assertEquals(3, nodesOnLevels.get(2).size());
+        assertEquals(4, nodesOnLevels.get(3).size());
 
-        testObj.getMoveTree().moveDown(whiteMove);
-        testObj.getMoveTree().moveDown(blackMove);
-
-        assertEquals(0, moveTree.getCurrentNode().getChildren().size());
-        assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getGameEngine().getGameState());
-        assertEquals(GameEngine.GameState.WON_BY_BLACK, moveTree.getCurrentNode().getState().getGameState());
-        assertEquals(-100, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
+        int numberOfNodesWithGameEnded = 0;
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(2)) {
+            if (node.getState().getGameState() != GameEngine.GameState.RUNNING) {
+                assertEquals(0, node.getChildren().size());
+                assertEquals(GameEngine.GameState.WON_BY_BLACK, node.getState().getGameState());
+                assertEquals(-100, node.getState().getRewardFunctionOutcome(), 0);
+                numberOfNodesWithGameEnded++;
+            }
+        }
+        assertEquals(1, numberOfNodesWithGameEnded);
     }
 
     @Test
     public void calculateTree_withPossibilityOfDrawingInTheTree() {
-        Piece whitePiece = boardManager.addWhiteQueen(40);
+        boardManager.addWhiteQueen(40);
         boardManager.addBlackPawn(5);
         moveTree.getGameEngine().setIsWhiteToMove(true);
+
         DrawArbiter drawArbiter = new DrawArbiter();
         drawArbiter.setDrawCounter(1);
         drawArbiter.setDrawConditions(DrawArbiter.DrawConditions.TWO_VS_ONE);
+
         moveTree.getGameEngine().setDrawArbiter(drawArbiter);
         moveTree.saveGameStateToNode();
 
         testObj.setDepth(3);
         testObj.calculateTree();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(3);
 
-        Move<Hop> whiteMove = new Move<>(whitePiece);
-        whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(34)));
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(11, nodesOnLevels.get(1).size());
+        assertEquals(0, nodesOnLevels.get(2).size());
+        assertEquals(0, nodesOnLevels.get(3).size());
 
-        testObj.getMoveTree().moveDown(whiteMove);
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(1)) {
+            assertEquals(GameEngine.GameState.DRAWN, node.getState().getGameState());
+            assertEquals(0, node.getState().getDrawCounter());
+            assertEquals(0, node.getState().getRewardFunctionOutcome(), 0);
 
-        assertEquals(GameEngine.GameState.DRAWN, moveTree.getGameEngine().getGameState());
-        assertEquals(GameEngine.GameState.DRAWN, moveTree.getCurrentNode().getState().getGameState());
-        assertEquals(0, moveTree.getCurrentNode().getState().getDrawCounter());
-        assertEquals(0, moveTree.getCurrentNode().getState().getRewardFunctionOutcome(), 0);
-
-        int[] numberOfNodesOnLevel = calculateNodesOnLevels(4);
-
-        assertEquals(1, numberOfNodesOnLevel[0]);
-        assertEquals(11, numberOfNodesOnLevel[1]);
-        assertEquals(0, numberOfNodesOnLevel[2]);
-        assertEquals(0, numberOfNodesOnLevel[3]);
+        }
     }
 
     @Test
@@ -192,10 +221,12 @@ public class MainAlgorithmTest {
 
         moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
 
+        assertTrue(moveTree.getCurrentNode().getCondition().isPromotion());
         assertEquals(2, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
 
         moveTree.moveDown(moveTree.getCurrentNode().getChildren().get(0).getCondition());
 
+        assertTrue(moveTree.getCurrentNode().getCondition().isPromotion());
         assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
     }
 
@@ -213,22 +244,30 @@ public class MainAlgorithmTest {
         testObj.getMoveTree().moveDown(whiteMove);
 
         testObj.updateTreeAfterMove();
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
+                countTreeNodes(1);
 
-        assertEquals(3, moveTree.getNodes().size());
+        assertEquals(1, moveTree.getCurrentNode().getLevel());
+        assertEquals(1, moveTree.getRoot().getLevel());
+        assertEquals(1, nodesOnLevels.get(0).size());
+        assertEquals(2, nodesOnLevels.get(1).size());
 
-        int[] numberOfNodesOnLevel = calculateNodesOnLevels(3);
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(1)) {
+            assertEquals(2, node.getLevel());
+        }
 
-        assertEquals(0, moveTree.getCurrentNode().getLevel());
-        assertEquals(1, numberOfNodesOnLevel[0]);
-        assertEquals(2, numberOfNodesOnLevel[1]);
-        assertEquals(0, numberOfNodesOnLevel[2]);
+        testObj.calculateNextTreeLevel(3);
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withNewLevel =
+                countTreeNodes(2);
 
-        testObj.calculateNextTreeLevel(2);
-        numberOfNodesOnLevel = calculateNodesOnLevels(3);
-
-        assertEquals(5, moveTree.getNodes().size());
-        assertEquals(2, numberOfNodesOnLevel[2]);
+        assertEquals(1, nodesOnLevels_withNewLevel.get(0).size());
+        assertEquals(2, nodesOnLevels_withNewLevel.get(1).size());
+        assertEquals(2, nodesOnLevels_withNewLevel.get(2).size());
         assertEquals(moveTree.getRoot(), moveTree.getCurrentNode());
+
+        for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels_withNewLevel.get(2)) {
+            assertEquals(3, node.getLevel());
+        }
     }
 
     @Test
