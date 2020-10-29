@@ -16,7 +16,7 @@ public class RewardCalculator {
         this.boardManager = boardManager;
     }
 
-    public void assessPosition(Node<PositionState, Move<? extends Hop>> node, boolean isPlayedColorWhite) {
+    public void assessPosition(Node<PositionState, Move<? extends Hop>> node) {
         double rewardOutcome = 0;
 
         switch (node.getState().getGameState()) {
@@ -38,28 +38,40 @@ public class RewardCalculator {
         node.getState().setRewardFunctionOutcome(rewardOutcome);
     }
 
-    public void findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    public Node<PositionState, Move<? extends Hop>> findBestChild(Node<PositionState, Move<? extends Hop>> ancestor,
+                                                                  boolean isNodeMaximizing) {
+        if (isNodeMaximizing) return findMaximumChild(ancestor);
+        else                  return findMinimumChild(ancestor);
+    }
+
+    public Node<PositionState, Move<? extends Hop>> findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double minimum = Double.MAX_VALUE;
+        Node<PositionState, Move<? extends Hop>> currentMinimumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
             if (child.getState().getRewardFunctionOutcome() < minimum) {
                 minimum = child.getState().getRewardFunctionOutcome();
+                currentMinimumChild = child;
             }
         }
 
         ancestor.getState().setRewardFunctionOutcome(minimum);
+        return currentMinimumChild;
     }
 
-    public void findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    public Node<PositionState, Move<? extends Hop>> findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double maximum = -Double.MAX_VALUE;
+        Node<PositionState, Move<? extends Hop>> currentMaximumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
             if (child.getState().getRewardFunctionOutcome() > maximum) {
                 maximum = child.getState().getRewardFunctionOutcome();
+                currentMaximumChild = child;
             }
         }
 
         ancestor.getState().setRewardFunctionOutcome(maximum);
+        return currentMaximumChild;
     }
 
     public double assessPieces() {
@@ -73,14 +85,14 @@ public class RewardCalculator {
         double value = 0;
         for (Piece piece : pieces) {
             if (piece.isQueen()) value += calculateQueenValue();
-            else                 value += 1;
+            else                 value += 1 * pawnRowFunction(piece);
         }
         return value;
     }
 
     private double calculateQueenValue() {
         int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
-        return queenFunctionBasic(numberOfPieces);
+        return queenFunctionInterpolated(numberOfPieces);
     }
 
     private double queenFunctionBasic(int numberOfPieces) {
@@ -99,5 +111,17 @@ public class RewardCalculator {
                 a1 * numberOfPieces +
                 a0;
 
+    }
+
+    private double pawnRowFunction(Piece piece) {
+        int row = piece.getPosition().getRow();
+        if (piece.isWhite()) {
+            if (row >=6) return 1; //white side of the board
+            else         return Math.pow( (Math.abs(row-11) - 5), 0.1666);
+        }
+        else {
+            if (row <=5) return 1; //black side of the board
+            else         return Math.pow( row-5, 0.1666);
+        }
     }
 }
