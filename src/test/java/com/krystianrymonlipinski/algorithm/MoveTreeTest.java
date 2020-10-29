@@ -10,7 +10,6 @@ import draughts.library.movemodel.Move;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
@@ -26,7 +25,7 @@ public class MoveTreeTest {
     public void setUp() {
         gameEngine = new GameEngine();
         gameEngine.setGameState(GameEngine.GameState.RUNNING);
-        MoveTree moveTree = new MoveTree(new Node<>(Node.Type.ROOT_NODE), gameEngine);
+        MoveTree moveTree = new MoveTree(new Node<>(), gameEngine);
         testObj = spy(moveTree);
         gameEngine.getBoardManager().createEmptyBoard();
     }
