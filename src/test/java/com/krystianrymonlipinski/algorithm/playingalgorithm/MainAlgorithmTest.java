@@ -64,7 +64,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(1);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(1);
@@ -88,7 +88,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(2);
 
@@ -110,7 +110,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(6);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(6);
 
@@ -132,7 +132,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(2);
 
@@ -154,7 +154,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(3);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(3);
 
@@ -189,7 +189,7 @@ public class MainAlgorithmTest {
         moveTree.saveGameStateToNode();
 
         testObj.setDepth(3);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(3);
 
@@ -214,7 +214,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         assertEquals(2, moveTree.getGameEngine().getBoardManager().getWhitePieces().size());
         assertEquals(1, moveTree.getGameEngine().getBoardManager().getBlackPieces().size());
@@ -237,7 +237,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         Move<Hop> whiteMove = new Move<>(whitePiece);
         whiteMove.addHop(new Hop(whitePiece.getPosition(), getTile(27)));
@@ -256,7 +256,7 @@ public class MainAlgorithmTest {
             assertEquals(2, node.getLevel());
         }
 
-        testObj.calculateNextTreeLevel(3);
+        testObj.calculateNextTreeLevel(3, null);
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withNewLevel =
                 countTreeNodes(2);
 
@@ -280,7 +280,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(6);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
         assertNotEquals(0, moveTree.getCurrentNode().getState().getRewardFunctionOutcome());
 
         Move<? extends Hop> bestMove = testObj.findBestMove();
@@ -306,7 +306,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(false);
 
         testObj.setDepth(4);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         Move<? extends Hop> bestMove = testObj.findBestMove();
         testObj.getMoveTree().moveDown(bestMove);
@@ -332,7 +332,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(4);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         Move<? extends Hop> bestMove = testObj.findBestMove();
         testObj.getMoveTree().moveDown(bestMove);
@@ -357,7 +357,7 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(6);
-        testObj.calculateTree();
+        testObj.calculateTree(null);
 
         Move<? extends Hop> bestMove = testObj.findBestMove();
         testObj.getMoveTree().moveDown(bestMove);

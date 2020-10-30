@@ -1,5 +1,6 @@
 package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
+import com.krystianrymonlipinski.algorithm.geneticalgorithm.Specimen;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
@@ -40,11 +41,11 @@ public class MainAlgorithm {
         this.moveTree = moveTree;
     }
 
-    public void calculateTree() {
-        bindMovesAsNodes(depth);
+    public void calculateTree(Specimen specimen) {
+        bindMovesAsNodes(depth, specimen);
     }
 
-    private void bindMovesAsNodes(int maxLevel) {
+    private void bindMovesAsNodes(int maxLevel, Specimen specimen) {
         if (moveTree.getCurrentNode().getLevel() < maxLevel &&
                 moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
 
@@ -58,14 +59,14 @@ public class MainAlgorithm {
 
             for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
                 moveTree.moveDown(node.getCondition());
-                bindMovesAsNodes(maxLevel);
+                bindMovesAsNodes(maxLevel, specimen);
                 moveTree.moveUp();
             }
             boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
             rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
 
         } else {
-            rewardCalculator.assessPosition(moveTree.getCurrentNode());
+            rewardCalculator.assessPosition(moveTree.getCurrentNode(), specimen);
         }
     }
 
@@ -73,24 +74,24 @@ public class MainAlgorithm {
         moveTree.setCurrentNodeAsRoot();
     }
 
-    public void calculateNextTreeLevel(int levelToCalculate) {
+    public void calculateNextTreeLevel(int levelToCalculate, Specimen specimen) {
         if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
-            bindMovesAsNodes(levelToCalculate);
+            bindMovesAsNodes(levelToCalculate, specimen);
         }
         else {
-            travelThroughTree(levelToCalculate);
+            travelThroughTree(levelToCalculate, specimen);
         }
     }
 
-    public void travelThroughTree(int levelToCalculate) {
+    public void travelThroughTree(int levelToCalculate, Specimen specimen) {
         for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
 
             moveTree.moveDown(node.getCondition());
             if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
-                bindMovesAsNodes(levelToCalculate);
+                bindMovesAsNodes(levelToCalculate, specimen);
             }
             else {
-                travelThroughTree(levelToCalculate);
+                travelThroughTree(levelToCalculate, specimen);
             }
             moveTree.moveUp();
         }

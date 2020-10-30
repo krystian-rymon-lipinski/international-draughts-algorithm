@@ -1,5 +1,6 @@
 package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
+import com.krystianrymonlipinski.algorithm.geneticalgorithm.Specimen;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
 import draughts.library.managers.BoardManager;
@@ -16,12 +17,12 @@ public class RewardCalculator {
         this.boardManager = boardManager;
     }
 
-    public void assessPosition(Node<PositionState, Move<? extends Hop>> node) {
+    public void assessPosition(Node<PositionState, Move<? extends Hop>> node, Specimen specimen) {
         double rewardOutcome = 0;
 
         switch (node.getState().getGameState()) {
             case RUNNING:
-                rewardOutcome = assessPieces();
+                rewardOutcome = assessPieces(specimen);
                 break;
             case WON_BY_BLACK:
                 rewardOutcome = -100;
@@ -74,7 +75,7 @@ public class RewardCalculator {
         return currentMaximumChild;
     }
 
-    public double assessPieces() {
+    public double assessPieces(Specimen specimen) {
         double whitePiecesValue = calculateBasicPiecesValue(boardManager.getWhitePieces());
         double blackPiecesValue = calculateBasicPiecesValue(boardManager.getBlackPieces());
 
