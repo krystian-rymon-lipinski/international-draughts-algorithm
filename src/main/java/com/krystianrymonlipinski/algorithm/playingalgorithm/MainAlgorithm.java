@@ -1,4 +1,4 @@
-package com.krystianrymonlipinski.algorithm;
+package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.managers.GameEngine;

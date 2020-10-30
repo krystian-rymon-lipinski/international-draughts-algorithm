@@ -1,5 +1,7 @@
 package com.krystianrymonlipinski.algorithm;
 
+import com.krystianrymonlipinski.algorithm.playingalgorithm.PositionState;
+import com.krystianrymonlipinski.algorithm.playingalgorithm.RewardCalculator;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;

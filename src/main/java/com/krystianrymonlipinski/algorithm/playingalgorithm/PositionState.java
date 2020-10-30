@@ -1,4 +1,4 @@
-package com.krystianrymonlipinski.algorithm;
+package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
 import draughts.library.managers.DrawArbiter;
 import draughts.library.managers.GameEngine;

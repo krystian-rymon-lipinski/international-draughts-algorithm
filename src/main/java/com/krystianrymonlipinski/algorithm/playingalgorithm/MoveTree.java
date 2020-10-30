@@ -1,4 +1,4 @@
-package com.krystianrymonlipinski.algorithm;
+package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
 import com.krystianrymonlipinski.exceptions.NoAncestorForRootNodeException;
 import com.krystianrymonlipinski.exceptions.NodeConditionNotFoundException;
@@ -66,13 +66,13 @@ public class MoveTree extends Tree<PositionState, Move<? extends Hop>> {
         }
     }
 
-     void readGameStateFromNode() {
+     public void readGameStateFromNode() {
         gameEngine.setGameState(currentNode.getState().getGameState());
         gameEngine.getDrawArbiter().setDrawConditions(currentNode.getState().getDrawConditions());
         gameEngine.getDrawArbiter().setDrawCounter(currentNode.getState().getDrawCounter());
     }
 
-     void saveGameStateToNode() {
+     public void saveGameStateToNode() {
         currentNode.getState().setGameState(gameEngine.getGameState());
         currentNode.getState().setDrawConditions(gameEngine.getDrawArbiter().getDrawConditions());
         currentNode.getState().setDrawCounter(gameEngine.getDrawArbiter().getDrawCounter());

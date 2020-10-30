@@ -1,5 +1,7 @@
 package com.krystianrymonlipinski.algorithm;
 
+import com.krystianrymonlipinski.algorithm.playingalgorithm.MoveTree;
+import com.krystianrymonlipinski.algorithm.playingalgorithm.PositionState;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
 import draughts.library.boardmodel.Tile;
