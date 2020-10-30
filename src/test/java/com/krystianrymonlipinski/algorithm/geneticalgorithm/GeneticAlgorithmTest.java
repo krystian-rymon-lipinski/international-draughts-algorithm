@@ -29,7 +29,7 @@ public class GeneticAlgorithmTest {
         testObj.playTournament();
 
         int numberOfPlayers = testObj.getSpecimens().size();
-        int numberOfMatchesToPlay = numberOfPlayers*(numberOfPlayers-1)/2;
+        int numberOfMatchesToPlay = numberOfPlayers * (numberOfPlayers-1)/2;
 
         verify(testObj, times(numberOfMatchesToPlay)).playGame(any(Specimen.class), any(Specimen.class));
     }

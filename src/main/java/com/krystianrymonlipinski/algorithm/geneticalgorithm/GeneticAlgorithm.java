@@ -6,32 +6,49 @@ import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Random;
 
 public class GeneticAlgorithm {
 
+    private final static int ALGORITHM_DEPTH = 4;
+
+    private final static int PARAMETERS_RANGE = 200;
     private final static int NUMBER_OF_GENERATIONS = 20;
-    private final static int NUMBER_OF_SPECIMENS = 6;
+    private final static int POPULATION_SIZE = 6;
+    private final static int NUMBER_OF_BEST_TO_SELECT = 1;
+
+    //private int crossingRange =
+
     private ArrayList<Specimen> specimens = new ArrayList<>();
 
-    private final static int ALGORITHM_DEPTH = 4;
+
 
 
     public ArrayList<Specimen> getSpecimens() {
         return specimens;
     }
 
+    public void trainAlgorithm() {
+        createFirstGeneration();
+
+        for (int i=0; i<NUMBER_OF_GENERATIONS; i++) {
+            ArrayList<TournamentPlayer> standings = playTournament();
+            chooseBestSpecimens(standings);
+            createChildrenByCrossing();
+            mutate();
+        }
+    }
+
     public void createFirstGeneration() {
-        for (int i=0; i<NUMBER_OF_SPECIMENS; i++) {
-            specimens.add(new Specimen(100));
+        for (int i = 0; i< POPULATION_SIZE; i++) {
+            specimens.add(new Specimen(PARAMETERS_RANGE));
             System.out.println(specimens.get(i));
         }
     }
 
-    public void playTournament() { //every algorithm with every algorithm
+    public ArrayList<TournamentPlayer> playTournament() { //every algorithm with every algorithm
         ArrayList<TournamentPlayer> tournamentStandings = new ArrayList<>();
-        for (int i=0; i<NUMBER_OF_SPECIMENS; i++) {
+        for (int i = 0; i< POPULATION_SIZE; i++) {
             tournamentStandings.add(new TournamentPlayer(specimens.get(i)));
         }
 
@@ -64,10 +81,22 @@ public class GeneticAlgorithm {
         }
 
         Collections.sort(tournamentStandings);
+        return tournamentStandings;
+    }
 
-        for(TournamentPlayer player : tournamentStandings) {
-            System.out.println(player.getScore());
+    public void chooseBestSpecimens(ArrayList<TournamentPlayer> tournamentStandings) {
+        specimens.clear();
+
+        for (int i=0; i<NUMBER_OF_BEST_TO_SELECT; i++) {
+            specimens.add(tournamentStandings.get(i).player);
         }
+    }
+
+    public void createChildrenByCrossing() {
+
+    }
+
+    public void mutate() {
 
     }
 
@@ -98,7 +127,7 @@ public class GeneticAlgorithm {
         return gameEngine.getGameState();
     }
 
-    private class TournamentPlayer implements Comparable<TournamentPlayer>{
+    private static class TournamentPlayer implements Comparable<TournamentPlayer>{
         private Specimen player;
         private float score;
 
