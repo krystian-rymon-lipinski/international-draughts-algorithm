@@ -48,4 +48,13 @@ public class Specimen {
         this.pawnsParameter = range * 2 * (random.nextFloat() - 0.5f);
         this.pawnsPositionParameter = range * 2 * (random.nextFloat() - 0.5f);
     }
+
+    @Override
+    public String toString() {
+        return "Specimen{" +
+                "queensParameter = " + queensParameter +
+                ", pawnsParameter = " + pawnsParameter +
+                ", pawnsPositionParameter = " + pawnsPositionParameter +
+                '}';
+    }
 }
