@@ -3,6 +3,7 @@ package com.krystianrymonlipinski.algorithm.geneticalgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 
 public class GeneticAlgorithmTest {
@@ -13,6 +14,12 @@ public class GeneticAlgorithmTest {
     public void setUp() {
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
         testObj = spy(geneticAlgorithm);
+    }
+
+    @Test
+    public void createFirstGeneration() {
+        testObj.createFirstGeneration();
+        assertEquals(16, testObj.getSpecimens().size());
     }
 
     @Test
