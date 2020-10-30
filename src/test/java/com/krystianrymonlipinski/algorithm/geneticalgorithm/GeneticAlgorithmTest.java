@@ -3,7 +3,6 @@ package com.krystianrymonlipinski.algorithm.geneticalgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.spy;
 
 public class GeneticAlgorithmTest {
