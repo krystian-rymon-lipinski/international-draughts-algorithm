@@ -1,10 +1,11 @@
 package com.krystianrymonlipinski.algorithm.geneticalgorithm;
 
+import draughts.library.managers.GameEngine;
 import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.*;
 
 public class GeneticAlgorithmTest {
 
@@ -23,11 +24,22 @@ public class GeneticAlgorithmTest {
     }
 
     @Test
+    public void playTournament() {
+        testObj.createFirstGeneration();
+        testObj.playTournament();
+
+        int numberOfPlayers = testObj.getSpecimens().size();
+        int numberOfMatchesToPlay = numberOfPlayers*(numberOfPlayers-1)/2;
+
+        verify(testObj, times(numberOfMatchesToPlay)).playGame(any(Specimen.class), any(Specimen.class));
+    }
+
+    @Test
     public void playGame() {
         Specimen first = new Specimen(100);
         Specimen second = new Specimen(200);
 
-        testObj.playGame(first, second);
-
+        GameEngine.GameState outcome = testObj.playGame(first, second);
+        assertNotEquals(GameEngine.GameState.RUNNING, outcome);
     }
 }
