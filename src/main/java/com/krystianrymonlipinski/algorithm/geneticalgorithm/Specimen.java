@@ -44,9 +44,9 @@ public class Specimen {
 
     public void generateRandomSpecimen(int range) {
         Random random = new Random();
-        this.queensParameter = range * 2 * (random.nextFloat() - 0.5f); //allow negative values of a parameter
-        this.pawnsParameter = range * 2 * (random.nextFloat() - 0.5f);
-        this.pawnsPositionParameter = range * 2 * (random.nextFloat() - 0.5f);
+        this.queensParameter = range * random.nextFloat();
+        this.pawnsParameter = range * random.nextFloat();
+        this.pawnsPositionParameter = range * random.nextFloat();
     }
 
     @Override
