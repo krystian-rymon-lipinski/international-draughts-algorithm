@@ -88,7 +88,14 @@ public class RewardCalculator {
             if (piece.isQueen()) fitnessValue[0] += calculateQueenValue();
             else {
                 fitnessValue[1] += 1;
-                fitnessValue[2] += pawnRowFunction(piece);
+
+                int row = piece.getPosition().getRow();
+                if (piece.isWhite() && row <= 5) {
+                    fitnessValue[2] += calculatePawnRowValue(Math.abs(row-11));
+                }
+                else if (!piece.isWhite() && row >= 6) {
+                    fitnessValue[2] += calculatePawnRowValue(row);
+                }
             }
         }
         if (specimen == null) {
@@ -120,15 +127,15 @@ public class RewardCalculator {
 
     }
 
-    private double pawnRowFunction(Piece piece) {
-        int row = piece.getPosition().getRow();
-        if (piece.isWhite()) {
-            if (row >=6) return 1; //white side of the board
-            else         return Math.pow( (Math.abs(row-11) - 5), 0.1666);
-        }
-        else {
-            if (row <=5) return 1; //black side of the board
-            else         return Math.pow( row-5, 0.1666);
-        }
+    private double calculatePawnRowValue(int row) {
+        double a3 = -0.0117;
+        double a2 = 0.28;
+        double a1 = -2.1283;
+        double a0 = 5.23;
+
+        return a3 * Math.pow(row, 3) +
+                a2 * Math.pow(row, 2) +
+                a1 * Math.pow(row, 1) +
+                a0;
     }
 }
