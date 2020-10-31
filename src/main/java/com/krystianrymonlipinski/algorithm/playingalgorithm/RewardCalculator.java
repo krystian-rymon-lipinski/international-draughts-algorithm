@@ -22,7 +22,7 @@ public class RewardCalculator {
 
         switch (node.getState().getGameState()) {
             case RUNNING:
-                rewardOutcome = assessPieces(specimen);
+                rewardOutcome = calculatePosition(specimen);
                 break;
             case WON_BY_BLACK:
                 rewardOutcome = -100;
@@ -75,32 +75,38 @@ public class RewardCalculator {
         return currentMaximumChild;
     }
 
-    public double assessPieces(Specimen specimen) {
-        double whitePiecesValue = calculateBasicPiecesValue(boardManager.getWhitePieces());
-        double blackPiecesValue = calculateBasicPiecesValue(boardManager.getBlackPieces());
+    public double calculatePosition(Specimen specimen) {
+        double whitePiecesValue = calculatePieces(boardManager.getWhitePieces(), specimen);
+        double blackPiecesValue = calculatePieces(boardManager.getBlackPieces(), specimen);
 
         return whitePiecesValue - blackPiecesValue;
     }
 
-    public double calculateBasicPiecesValue(ArrayList<Piece> pieces) {
-        double value = 0;
+    public double calculatePieces(ArrayList<Piece> pieces, Specimen specimen) {
+        double[] fitnessValue = new double[3];
         for (Piece piece : pieces) {
-            if (piece.isQueen()) value += calculateQueenValue();
-            else                 value += 1 * pawnRowFunction(piece);
+            if (piece.isQueen()) fitnessValue[0] += calculateQueenValue();
+            else {
+                fitnessValue[1] += 1;
+                fitnessValue[2] += pawnRowFunction(piece);
+            }
         }
-        return value;
-    }
-
-    private double calculateQueenValue() {
-        int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
-        return queenFunctionInterpolated(numberOfPieces);
+        if (specimen == null) {
+            return fitnessValue[0] + fitnessValue[1] + fitnessValue[2];
+        } else {
+            return  specimen.getQueensParameter() * fitnessValue[0] +
+                    specimen.getPawnsParameter() + fitnessValue[1] +
+                    specimen.getPawnsPositionParameter() + fitnessValue[2];
+        }
     }
 
     private double queenFunctionBasic(int numberOfPieces) {
         return 3;
     }
 
-    private double queenFunctionInterpolated(int numberOfPieces) {
+    private double calculateQueenValue() {
+        int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
+
         double a4 = 3.20484 * Math.pow(10, -7);
         double a3 = -8.2084 * Math.pow(10, -5);
         double a2 = 0.0041;
