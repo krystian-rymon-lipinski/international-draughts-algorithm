@@ -12,6 +12,19 @@ import java.util.ArrayList;
 public class RewardCalculator {
 
     private final BoardManager boardManager;
+    private final double[] queenValueCoefficients = {
+        3.20484 * Math.pow(10, -7),
+        -8.2084 * Math.pow(10, -5),
+        0.0041,
+        -0.0810,
+        3.3270
+    };
+    private final double[] pawnRowValueCoefficients = {
+        -0.0117,
+        0.28,
+        -2.1283,
+        5.23
+    };
 
     public RewardCalculator(BoardManager boardManager) {
         this.boardManager = boardManager;
@@ -114,28 +127,18 @@ public class RewardCalculator {
     private double calculateQueenValue() {
         int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
 
-        double a4 = 3.20484 * Math.pow(10, -7);
-        double a3 = -8.2084 * Math.pow(10, -5);
-        double a2 = 0.0041;
-        double a1 = -0.0810;
-        double a0 = 3.3270;
-        return a4 * Math.pow(numberOfPieces, 4) +
-               a3 * Math.pow(numberOfPieces, 3) +
-               a2 * Math.pow(numberOfPieces, 2) +
-                a1 * numberOfPieces +
-                a0;
+        return  queenValueCoefficients[0] * Math.pow(numberOfPieces, 4) +
+                queenValueCoefficients[1] * Math.pow(numberOfPieces, 3) +
+                queenValueCoefficients[2] * Math.pow(numberOfPieces, 2) +
+                queenValueCoefficients[3] * numberOfPieces +
+                queenValueCoefficients[4];
 
     }
 
     private double calculatePawnRowValue(int row) {
-        double a3 = -0.0117;
-        double a2 = 0.28;
-        double a1 = -2.1283;
-        double a0 = 5.23;
-
-        return a3 * Math.pow(row, 3) +
-                a2 * Math.pow(row, 2) +
-                a1 * Math.pow(row, 1) +
-                a0;
+        return  pawnRowValueCoefficients[0] * Math.pow(row, 3) +
+                pawnRowValueCoefficients[1] * Math.pow(row, 2) +
+                pawnRowValueCoefficients[2] * Math.pow(row, 1) +
+                pawnRowValueCoefficients[3];
     }
 }
