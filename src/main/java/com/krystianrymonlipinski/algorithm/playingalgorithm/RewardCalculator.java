@@ -12,6 +12,8 @@ import java.util.ArrayList;
 public class RewardCalculator {
 
     private final BoardManager boardManager;
+    private double fitnessFunctionValue;
+
     private final double[] queenValueCoefficients = {
         3.20484 * Math.pow(10, -7),
         -8.2084 * Math.pow(10, -5),
@@ -28,28 +30,28 @@ public class RewardCalculator {
 
     public RewardCalculator(BoardManager boardManager) {
         this.boardManager = boardManager;
+        this.fitnessFunctionValue = 0;
     }
 
     public void assessPosition(Node<PositionState, Move<? extends Hop>> node, Specimen specimen) {
-        double rewardOutcome = 0;
-
         switch (node.getState().getGameState()) {
             case RUNNING:
-                rewardOutcome = calculatePosition(specimen);
+                calculatePosition(specimen);
                 break;
             case WON_BY_BLACK:
-                rewardOutcome = -100;
+                fitnessFunctionValue = -100;
                 break;
             case WON_BY_WHITE:
-                rewardOutcome = 100;
+                fitnessFunctionValue = 100;
                 break;
             case DRAWN:
-                rewardOutcome = 0;
+                fitnessFunctionValue = 0;
             default:
                 break;
         }
 
-        node.getState().setRewardFunctionOutcome(rewardOutcome);
+        node.getState().setRewardFunctionOutcome(fitnessFunctionValue);
+        fitnessFunctionValue = 0; //to calculate next nodes without bias
     }
 
     public Node<PositionState, Move<? extends Hop>> findBestChild(Node<PositionState, Move<? extends Hop>> ancestor,
@@ -88,11 +90,11 @@ public class RewardCalculator {
         return currentMaximumChild;
     }
 
-    public double calculatePosition(Specimen specimen) {
+    public void calculatePosition(Specimen specimen) {
         double whitePiecesValue = calculatePieces(boardManager.getWhitePieces(), specimen);
         double blackPiecesValue = calculatePieces(boardManager.getBlackPieces(), specimen);
 
-        return whitePiecesValue - blackPiecesValue;
+        fitnessFunctionValue = whitePiecesValue - blackPiecesValue;
     }
 
     public double calculatePieces(ArrayList<Piece> pieces, Specimen specimen) {
