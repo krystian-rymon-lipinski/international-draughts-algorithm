@@ -13,16 +13,13 @@ public class MainAlgorithm {
     private int depth;
     private MoveTree moveTree;
     private RewardCalculator rewardCalculator;
-
-    public MainAlgorithm(int depth) {
-        this.depth = depth;
-        moveTree = new MoveTree(new Node<>(), new GameEngine());
-    }
+    private boolean usingAlphaBeta;
 
     public MainAlgorithm(int depth, GameEngine gameEngine) {
-        this(depth);
+        this.depth = depth;
         moveTree = new MoveTree(new Node<>(), gameEngine);
         rewardCalculator = new RewardCalculator(gameEngine.getBoardManager());
+        usingAlphaBeta = true;
     }
 
     public int getDepth() {
@@ -39,6 +36,14 @@ public class MainAlgorithm {
 
     public void setMoveTree(MoveTree moveTree) {
         this.moveTree = moveTree;
+    }
+
+    public boolean isUsingAlphaBeta() {
+        return usingAlphaBeta;
+    }
+
+    public void setUsingAlphaBeta(boolean usingAlphaBeta) {
+        this.usingAlphaBeta = usingAlphaBeta;
     }
 
     public void calculateTree(Specimen specimen) {

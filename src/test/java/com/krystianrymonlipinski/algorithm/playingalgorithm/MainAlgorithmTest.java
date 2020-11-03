@@ -231,6 +231,33 @@ public class MainAlgorithmTest {
     }
 
     @Test
+    public void calculateTree_usingAlphaBeta() {
+        boardManager.addWhitePawn(13);
+        boardManager.addWhitePawn(38);
+        boardManager.addBlackPawn(28);
+        boardManager.addBlackPawn(29);
+        moveTree.getGameEngine().setIsWhiteToMove(true);
+
+        testObj.setDepth(2);
+        testObj.setUsingAlphaBeta(false);
+        testObj.calculateTree(null);
+
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withoutAlphaBeta =
+                countTreeNodes(2);
+
+        assertEquals(11, nodesOnLevels_withoutAlphaBeta.get(2).size());
+
+        testObj.setUsingAlphaBeta(true);
+        testObj.calculateTree(null);
+
+        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withAlphaBeta =
+                countTreeNodes(2);
+
+        assertEquals(10, nodesOnLevels_withAlphaBeta.get(2).size());
+    }
+
+
+    @Test
     public void calculateTreeLevel() {
         Piece whitePiece = boardManager.addWhitePawn(32);
         boardManager.addBlackPawn(17);

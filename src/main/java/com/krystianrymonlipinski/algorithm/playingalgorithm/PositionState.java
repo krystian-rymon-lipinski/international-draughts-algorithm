@@ -9,6 +9,8 @@ public class PositionState {
     private GameEngine.GameState gameState;
     private DrawArbiter.DrawConditions drawConditions;
     private int drawCounter;
+    private double alpha = RewardCalculator.FITNESS_FUNCTION_VALUE_BLACK_WON;
+    private double beta = RewardCalculator.FITNESS_FUNCTION_VALUE_WHITE_WON;
 
     public PositionState(GameEngine gameEngine) {
         this.gameState = gameEngine.getGameState();
@@ -46,5 +48,21 @@ public class PositionState {
 
     public void setDrawCounter(int drawCounter) {
         this.drawCounter = drawCounter;
+    }
+
+    public double getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(double alpha) {
+        this.alpha = alpha;
+    }
+
+    public double getBeta() {
+        return beta;
+    }
+
+    public void setBeta(double beta) {
+        this.beta = beta;
     }
 }

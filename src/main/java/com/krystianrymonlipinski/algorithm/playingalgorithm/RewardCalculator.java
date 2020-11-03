@@ -11,6 +11,10 @@ import java.util.ArrayList;
 
 public class RewardCalculator {
 
+    public final static int FITNESS_FUNCTION_VALUE_WHITE_WON = 100;
+    public final static int FITNESS_FUNCTION_VALUE_BLACK_WON = -100;
+    public final static int FITNESS_FUNCTION_VALUE_DRAW = 0;
+
     private final BoardManager boardManager;
     private double fitnessFunctionValue;
 
@@ -39,13 +43,13 @@ public class RewardCalculator {
                 calculatePosition(specimen);
                 break;
             case WON_BY_BLACK:
-                fitnessFunctionValue = -100;
+                fitnessFunctionValue = FITNESS_FUNCTION_VALUE_BLACK_WON;
                 break;
             case WON_BY_WHITE:
-                fitnessFunctionValue = 100;
+                fitnessFunctionValue = FITNESS_FUNCTION_VALUE_WHITE_WON;
                 break;
             case DRAWN:
-                fitnessFunctionValue = 0;
+                fitnessFunctionValue = FITNESS_FUNCTION_VALUE_DRAW;
             default:
                 break;
         }
