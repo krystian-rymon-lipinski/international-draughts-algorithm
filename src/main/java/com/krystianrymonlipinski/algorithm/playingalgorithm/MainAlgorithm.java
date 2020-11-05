@@ -7,6 +7,7 @@ import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class MainAlgorithm {
 
@@ -53,7 +54,6 @@ public class MainAlgorithm {
     private void bindMovesAsNodes(int maxLevel, Specimen specimen) {
         if (moveTree.getCurrentNode().getLevel() < maxLevel &&
                 moveTree.getCurrentNode().getState().getGameState() == GameEngine.GameState.RUNNING) {
-
             ArrayList<Move<? extends Hop>> moves =
                     moveTree.getGameEngine().getMoveManager().findAllCorrectMoves(
                             moveTree.getGameEngine().getBoardManager(), moveTree.getGameEngine().getIsWhiteToMove());
@@ -62,11 +62,26 @@ public class MainAlgorithm {
                 moveTree.addNode(moveTree.getCurrentNode(), move);
             }
 
-            for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
-                moveTree.moveDown(node.getCondition());
-                bindMovesAsNodes(maxLevel, specimen);
-                moveTree.moveUp();
+            ListIterator<Node<PositionState, Move<? extends Hop>>> nodeIterator =
+                    moveTree.getCurrentNode().getChildren().listIterator();
+
+            while (nodeIterator.hasNext()) {
+                Node<PositionState, Move<? extends Hop>> node = nodeIterator.next();
+                if (moveTree.getCurrentNode().getLevel() == 0 ||
+                        node.getAncestor().getState().getAlpha() <= node.getAncestor().getState().getBeta()) {
+                    moveTree.moveDown(node.getCondition());
+                    if (moveTree.getCurrentNode().getLevel() < maxLevel) { //last nodes  won't need a-b parameters
+                        updateAlphaBeta_movingDown();
+                    }
+                    bindMovesAsNodes(maxLevel, specimen);
+                    Node<PositionState, Move<? extends Hop>> recentChild = moveTree.moveUp();
+                    updateAlphaBeta_movingUp(recentChild);
+                }
+                else {
+                    nodeIterator.remove();
+                }
             }
+
             boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
             rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
 
@@ -109,6 +124,28 @@ public class MainAlgorithm {
     public Move<? extends Hop> findBestMove() {
         return rewardCalculator.findBestChild(moveTree.getCurrentNode(), moveTree.getGameEngine().getIsWhiteToMove()).
                 getCondition();
+    }
+
+    public void updateAlphaBeta_movingDown() {
+        moveTree.getCurrentNode().getState().setAlpha(moveTree.getCurrentNode().getAncestor().getState().getAlpha());
+        moveTree.getCurrentNode().getState().setBeta(moveTree.getCurrentNode().getAncestor().getState().getBeta());
+    }
+
+    public void updateAlphaBeta_movingUp(Node<PositionState, Move<? extends Hop>> recentChild) {
+
+        boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+        double recentChildValue = recentChild.getState().getRewardFunctionOutcome();
+
+        if (isNodeMaximizing) {
+            if (recentChildValue > moveTree.getCurrentNode().getState().getAlpha()) {
+                moveTree.getCurrentNode().getState().setAlpha(recentChildValue);
+            }
+        }
+        else {
+            if (recentChildValue < moveTree.getCurrentNode().getState().getBeta()) {
+                moveTree.getCurrentNode().getState().setBeta(recentChildValue);
+            }
+        }
     }
 
 

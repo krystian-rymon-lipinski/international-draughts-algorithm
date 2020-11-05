@@ -29,6 +29,7 @@ public class MainAlgorithmTest {
         GameEngine gameEngine = new GameEngine();
         gameEngine.setGameState(GameEngine.GameState.RUNNING);
         testObj = new MainAlgorithm(10, gameEngine);
+        testObj.setUsingAlphaBeta(false);
         moveTree = testObj.getMoveTree();
         boardManager = moveTree.getGameEngine().getBoardManager();
         boardManager.createEmptyBoard();
@@ -239,21 +240,17 @@ public class MainAlgorithmTest {
         moveTree.getGameEngine().setIsWhiteToMove(true);
 
         testObj.setDepth(2);
-        testObj.setUsingAlphaBeta(false);
-        testObj.calculateTree(null);
-
-        ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withoutAlphaBeta =
-                countTreeNodes(2);
-
-        assertEquals(11, nodesOnLevels_withoutAlphaBeta.get(2).size());
-
         testObj.setUsingAlphaBeta(true);
+
+        assertEquals(-100, moveTree.getRoot().getState().getAlpha(), 0);
+        assertEquals(100, moveTree.getRoot().getState().getBeta(), 0);
+
         testObj.calculateTree(null);
 
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels_withAlphaBeta =
                 countTreeNodes(2);
 
-        assertEquals(10, nodesOnLevels_withAlphaBeta.get(2).size());
+        assertEquals(10, nodesOnLevels_withAlphaBeta.get(2).size()); //11 without alpha-beta
     }
 
 
