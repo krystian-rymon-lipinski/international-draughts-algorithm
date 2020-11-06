@@ -18,6 +18,11 @@ public class GeneticAlgorithmTest {
     }
 
     @Test
+    public void trainAlgorithm() {
+        testObj.trainAlgorithm();
+    }
+
+    @Test
     public void createFirstGeneration() {
         testObj.createFirstGeneration();
         //assertEquals(16, testObj.getSpecimens().size());

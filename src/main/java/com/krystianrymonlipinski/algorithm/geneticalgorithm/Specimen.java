@@ -4,58 +4,58 @@ import java.util.Random;
 
 public class Specimen {
 
-    private float queensParameter;
-    private float pawnsParameter;
-    private float pawnsPositionParameter;
+    private float queensWeight;
+    private float pawnsWeight;
+    private float pawnsPositionsWeight;
 
     public Specimen(int rangeMin, int rangeMax) {
         this.generateRandomSpecimen(rangeMin, rangeMax);
     }
 
-    public Specimen(float queensParameter, float pawnsParameter, float pawnsPositionParameter) {
-        this.queensParameter = queensParameter;
-        this.pawnsParameter = pawnsParameter;
-        this.pawnsPositionParameter = pawnsPositionParameter;
+    public Specimen(float queensWeight, float pawnsWeight, float pawnsPositionsWeight) {
+        this.queensWeight = queensWeight;
+        this.pawnsWeight = pawnsWeight;
+        this.pawnsPositionsWeight = pawnsPositionsWeight;
     }
 
-    public float getQueensParameter() {
-        return queensParameter;
+    public float getQueensWeight() {
+        return queensWeight;
     }
 
-    public void setQueensParameter(float queensParameter) {
-        this.queensParameter = queensParameter;
+    public void setQueensWeight(float queensWeight) {
+        this.queensWeight = queensWeight;
     }
 
-    public float getPawnsParameter() {
-        return pawnsParameter;
+    public float getPawnsWeight() {
+        return pawnsWeight;
     }
 
-    public void setPawnsParameter(float pawnsParameter) {
-        this.pawnsParameter = pawnsParameter;
+    public void setPawnsWeight(float pawnsWeight) {
+        this.pawnsWeight = pawnsWeight;
     }
 
-    public float getPawnsPositionParameter() {
-        return pawnsPositionParameter;
+    public float getPawnsPositionsWeight() {
+        return pawnsPositionsWeight;
     }
 
-    public void setPawnsPositionParameter(float pawnsPositionParameter) {
-        this.pawnsPositionParameter = pawnsPositionParameter;
+    public void setPawnsPositionsWeight(float pawnsPositionsWeight) {
+        this.pawnsPositionsWeight = pawnsPositionsWeight;
     }
 
     public void generateRandomSpecimen(int rangeMin, int rangeMax) {
         Random random = new Random();
         int range = rangeMin + rangeMax;
-        this.queensParameter = range * random.nextFloat() - Math.abs(rangeMin);
-        this.pawnsParameter = range * random.nextFloat() - Math.abs(rangeMin);
-        this.pawnsPositionParameter = range * random.nextFloat() - Math.abs(rangeMin);
+        this.queensWeight = range * random.nextFloat() - Math.abs(rangeMin);
+        this.pawnsWeight = range * random.nextFloat() - Math.abs(rangeMin);
+        this.pawnsPositionsWeight = range * random.nextFloat() - Math.abs(rangeMin);
     }
 
     @Override
     public String toString() {
         return "Specimen{" +
-                "a = " + queensParameter +
-                ", b = " + pawnsParameter +
-                ", c = " + pawnsPositionParameter +
+                "a = " + queensWeight +
+                ", b = " + pawnsWeight +
+                ", c = " + pawnsPositionsWeight +
                 '}';
     }
 }

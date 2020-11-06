@@ -120,9 +120,9 @@ public class RewardCalculator {
         if (specimen == null) {
             return fitnessValue[0] + fitnessValue[1] + fitnessValue[2];
         } else {
-            return  specimen.getQueensParameter() * fitnessValue[0] +
-                    specimen.getPawnsParameter() + fitnessValue[1] +
-                    specimen.getPawnsPositionParameter() + fitnessValue[2];
+            return  specimen.getQueensWeight() * fitnessValue[0] +
+                    specimen.getPawnsWeight() + fitnessValue[1] +
+                    specimen.getPawnsPositionsWeight() + fitnessValue[2];
         }
     }
 
