@@ -8,8 +8,8 @@ public class Specimen {
     private float pawnsParameter;
     private float pawnsPositionParameter;
 
-    public Specimen(int range) {
-        this.generateRandomSpecimen(range);
+    public Specimen(int rangeMin, int rangeMax) {
+        this.generateRandomSpecimen(rangeMin, rangeMax);
     }
 
     public Specimen(float queensParameter, float pawnsParameter, float pawnsPositionParameter) {
@@ -42,19 +42,20 @@ public class Specimen {
         this.pawnsPositionParameter = pawnsPositionParameter;
     }
 
-    public void generateRandomSpecimen(int range) {
+    public void generateRandomSpecimen(int rangeMin, int rangeMax) {
         Random random = new Random();
-        this.queensParameter = range * random.nextFloat();
-        this.pawnsParameter = range * random.nextFloat();
-        this.pawnsPositionParameter = range * random.nextFloat();
+        int range = rangeMin + rangeMax;
+        this.queensParameter = range * random.nextFloat() - Math.abs(rangeMin);
+        this.pawnsParameter = range * random.nextFloat() - Math.abs(rangeMin);
+        this.pawnsPositionParameter = range * random.nextFloat() - Math.abs(rangeMin);
     }
 
     @Override
     public String toString() {
         return "Specimen{" +
-                "queensParameter = " + queensParameter +
-                ", pawnsParameter = " + pawnsParameter +
-                ", pawnsPositionParameter = " + pawnsPositionParameter +
+                "a = " + queensParameter +
+                ", b = " + pawnsParameter +
+                ", c = " + pawnsPositionParameter +
                 '}';
     }
 }

@@ -12,10 +12,14 @@ public class GeneticAlgorithm {
 
     private final static int ALGORITHM_DEPTH = 4;
 
-    private final static int PARAMETERS_RANGE = 200;
     private final static int NUMBER_OF_GENERATIONS = 20;
     private final static int POPULATION_SIZE = 6;
     private final static int NUMBER_OF_BEST_TO_SELECT = 1;
+
+    private final static int PARAMETER_RANGE_MIN = -1;
+    private final static int PARAMETER_RANGE_MAX = 10;
+    private final static float MUTATION_FACTOR = 0.2f;
+
 
     //private int crossingRange =
 
@@ -41,7 +45,7 @@ public class GeneticAlgorithm {
 
     public void createFirstGeneration() {
         for (int i = 0; i< POPULATION_SIZE; i++) {
-            specimens.add(new Specimen(PARAMETERS_RANGE));
+            specimens.add(new Specimen(PARAMETER_RANGE_MIN, PARAMETER_RANGE_MAX));
             System.out.println(specimens.get(i));
         }
     }
