@@ -1,6 +1,8 @@
 package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
 import com.krystianrymonlipinski.tree.model.Node;
+import draughts.library.boardmodel.Piece;
+import draughts.library.managers.BoardManager;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
@@ -68,5 +70,41 @@ public class RewardCalculatorTest {
 
         testObj.findBestChild(root, false);
         assertEquals(-4.91, root.getState().getRewardFunctionOutcome(), 0);
+    }
+
+    @Test
+    public void calculatePosition_noWeights_withPawnRows() {
+        BoardManager boardManager = gameEngine.getBoardManager();
+        boardManager.createEmptyBoard();
+        boardManager.addWhitePawn(10);
+        boardManager.addWhitePawn(11);
+        boardManager.addWhitePawn(27);
+        boardManager.addBlackPawn(24);
+        boardManager.addBlackPawn(33);
+        boardManager.addBlackPawn(41);
+
+        double whiteValue = testObj.calculatePieces(boardManager.getWhitePieces(), null);
+        double blackValue = testObj.calculatePieces(boardManager.getBlackPieces(), null);
+
+        assertEquals(3.4, whiteValue, 0.05); //some inconsistencies on third power
+        assertEquals(3.3, blackValue, 0.05);
+    }
+
+    @Test
+    public void calculatePosition_noWeights_withPawnsRows_withPawnStructures() {
+        BoardManager boardManager = gameEngine.getBoardManager();
+        boardManager.createEmptyBoard();
+        boardManager.addWhitePawn(12);
+        boardManager.addWhitePawn(13);
+        boardManager.addWhitePawn(18);
+        boardManager.addBlackPawn(32);
+        boardManager.addBlackPawn(33);
+        boardManager.addBlackPawn(38);
+
+        double whiteValue = testObj.calculatePieces(boardManager.getWhitePieces(), null);
+        double blackValue = testObj.calculatePieces(boardManager.getBlackPieces(), null);
+
+        assertEquals(3.41, whiteValue, 0.05);
+        assertEquals(3.31, blackValue, 0.05);
     }
 }

@@ -3,6 +3,7 @@ package com.krystianrymonlipinski.algorithm.playingalgorithm;
 import com.krystianrymonlipinski.algorithm.geneticalgorithm.Specimen;
 import com.krystianrymonlipinski.tree.model.Node;
 import draughts.library.boardmodel.Piece;
+import draughts.library.boardmodel.Tile;
 import draughts.library.managers.BoardManager;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
@@ -19,6 +20,13 @@ public class RewardCalculator {
     private double fitnessFunctionValue;
 
     private final double[] queenValueCoefficients = {
+        /* Interpolation nodes (number of pieces on the board -> value added to queenValue parameter):
+            1 -> 3.25
+            10 -> 2.85
+            20 -> 2.75
+            30 -> 2.65
+            40 -> 2.25
+         */
         3.20484 * Math.pow(10, -7),
         -8.2084 * Math.pow(10, -5),
         0.0041,
@@ -26,6 +34,12 @@ public class RewardCalculator {
         3.3270
     };
     private final double[] pawnRowValueCoefficients = {
+        /* Interpolation nodes (piece row (from its side of the board) -> value added to pawnRow parameter):
+            6 -> 0.02
+            7 -> 0.05
+            8 -> 0.15
+            9 -> 0.25
+         */
         -0.0117,
         0.28,
         -2.1283,
@@ -142,9 +156,33 @@ public class RewardCalculator {
     }
 
     private double calculatePawnRowValue(int row) {
-        return  pawnRowValueCoefficients[0] * Math.pow(row, 3) +
-                pawnRowValueCoefficients[1] * Math.pow(row, 2) +
-                pawnRowValueCoefficients[2] * Math.pow(row, 1) +
+        return  pawnRowValueCoefficients[0] * row * row * row + //multiplication is faster in case of integer powers
+                pawnRowValueCoefficients[1] * row * row       +
+                pawnRowValueCoefficients[2] * row             +
                 pawnRowValueCoefficients[3];
+    }
+
+    private double calculatePawnStructureValue(Piece piece) {
+        int goodNeighboors = 0;
+
+        if (piece.getPosition().getColumn() == 1) {
+            goodNeighboors++;
+        } else {
+            Tile upLeftTile = piece.findTarget(Piece.MoveDirection.UP_LEFT, boardManager.getBoard(), 1);
+            Tile downLeftTile = piece.findTarget(Piece.MoveDirection.DOWN_LEFT, boardManager.getBoard(), 1);
+            if (piece.isTileOccupiedBySameColor(upLeftTile)) goodNeighboors++;
+            if (piece.isTileOccupiedBySameColor(downLeftTile)) goodNeighboors++;
+        }
+
+        if (piece.getPosition().getColumn() == 10) {
+            goodNeighboors++;
+        } else {
+            Tile upRightTile = piece.findTarget(Piece.MoveDirection.UP_RIGHT, boardManager.getBoard(), 1);
+            Tile downRightTile = piece.findTarget(Piece.MoveDirection.DOWN_RIGHT, boardManager.getBoard(), 1);
+            if (piece.isTileOccupiedBySameColor(upRightTile)) goodNeighboors++;
+            if (piece.isTileOccupiedBySameColor(downRightTile)) goodNeighboors++;
+        }
+
+        return (double) goodNeighboors*goodNeighboors/100;
     }
 }
