@@ -174,19 +174,27 @@ public class RewardCalculator {
         if (piece.getPosition().getColumn() == 1) {
             friendlyNeighbours++;
         } else {
-            Tile upLeftTile = piece.findTarget(Piece.MoveDirection.UP_LEFT, boardManager.getBoard(), 1);
-            Tile downLeftTile = piece.findTarget(Piece.MoveDirection.DOWN_LEFT, boardManager.getBoard(), 1);
-            if (piece.isTileOccupiedBySameColor(upLeftTile)) friendlyNeighbours++;
-            if (piece.isTileOccupiedBySameColor(downLeftTile)) friendlyNeighbours++;
+            if (piece.getPosition().getRow() > 1) {
+                Tile upLeftTile = piece.findTarget(Piece.MoveDirection.UP_LEFT, boardManager.getBoard(), 1);
+                if (piece.isTileOccupiedBySameColor(upLeftTile)) friendlyNeighbours++;
+            }
+            if (piece.getPosition().getRow() < 10) {
+                Tile downLeftTile = piece.findTarget(Piece.MoveDirection.DOWN_LEFT, boardManager.getBoard(), 1);
+                if (piece.isTileOccupiedBySameColor(downLeftTile)) friendlyNeighbours++;
+            }
         }
 
         if (piece.getPosition().getColumn() == 10) {
             friendlyNeighbours++;
         } else {
-            Tile upRightTile = piece.findTarget(Piece.MoveDirection.UP_RIGHT, boardManager.getBoard(), 1);
-            Tile downRightTile = piece.findTarget(Piece.MoveDirection.DOWN_RIGHT, boardManager.getBoard(), 1);
-            if (piece.isTileOccupiedBySameColor(upRightTile)) friendlyNeighbours++;
-            if (piece.isTileOccupiedBySameColor(downRightTile)) friendlyNeighbours++;
+            if (piece.getPosition().getRow() > 1) {
+                Tile upRightTile = piece.findTarget(Piece.MoveDirection.UP_RIGHT, boardManager.getBoard(), 1);
+                if (piece.isTileOccupiedBySameColor(upRightTile)) friendlyNeighbours++;
+            }
+            if (piece.getPosition().getRow() < 10) {
+                Tile downRightTile = piece.findTarget(Piece.MoveDirection.DOWN_RIGHT, boardManager.getBoard(), 1);
+                if (piece.isTileOccupiedBySameColor(downRightTile)) friendlyNeighbours++;
+            }
         }
 
         return (double) friendlyNeighbours*friendlyNeighbours/100;
