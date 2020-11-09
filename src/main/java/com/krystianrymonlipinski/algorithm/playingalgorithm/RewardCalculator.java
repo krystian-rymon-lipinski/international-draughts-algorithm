@@ -116,7 +116,7 @@ public class RewardCalculator {
     }
 
     public double calculatePieces(ArrayList<Piece> pieces, Specimen specimen) {
-        double[] fitnessValue = new double[3];
+        double[] fitnessValue = new double[4];
         for (Piece piece : pieces) {
             if (piece.isQueen()) fitnessValue[0] += calculateQueenValue();
             else {
@@ -128,6 +128,11 @@ public class RewardCalculator {
                 }
                 else if (!piece.isWhite() && row >= 6) {
                     fitnessValue[2] += calculatePawnRowValue(row);
+                }
+
+                if ( (piece.isWhite() && row <= 5) || (!piece.isWhite() && row >=6) ||
+                      pieces.size() < 10) {
+                    fitnessValue[3] += calculatePawnStructureValue(piece);
                 }
             }
         }
@@ -163,26 +168,27 @@ public class RewardCalculator {
     }
 
     private double calculatePawnStructureValue(Piece piece) {
-        int goodNeighboors = 0;
+        System.out.println(piece.getPosition());
+        int friendlyNeighbours = 0;
 
         if (piece.getPosition().getColumn() == 1) {
-            goodNeighboors++;
+            friendlyNeighbours++;
         } else {
             Tile upLeftTile = piece.findTarget(Piece.MoveDirection.UP_LEFT, boardManager.getBoard(), 1);
             Tile downLeftTile = piece.findTarget(Piece.MoveDirection.DOWN_LEFT, boardManager.getBoard(), 1);
-            if (piece.isTileOccupiedBySameColor(upLeftTile)) goodNeighboors++;
-            if (piece.isTileOccupiedBySameColor(downLeftTile)) goodNeighboors++;
+            if (piece.isTileOccupiedBySameColor(upLeftTile)) friendlyNeighbours++;
+            if (piece.isTileOccupiedBySameColor(downLeftTile)) friendlyNeighbours++;
         }
 
         if (piece.getPosition().getColumn() == 10) {
-            goodNeighboors++;
+            friendlyNeighbours++;
         } else {
             Tile upRightTile = piece.findTarget(Piece.MoveDirection.UP_RIGHT, boardManager.getBoard(), 1);
             Tile downRightTile = piece.findTarget(Piece.MoveDirection.DOWN_RIGHT, boardManager.getBoard(), 1);
-            if (piece.isTileOccupiedBySameColor(upRightTile)) goodNeighboors++;
-            if (piece.isTileOccupiedBySameColor(downRightTile)) goodNeighboors++;
+            if (piece.isTileOccupiedBySameColor(upRightTile)) friendlyNeighbours++;
+            if (piece.isTileOccupiedBySameColor(downRightTile)) friendlyNeighbours++;
         }
 
-        return (double) goodNeighboors*goodNeighboors/100;
+        return (double) friendlyNeighbours*friendlyNeighbours/100;
     }
 }

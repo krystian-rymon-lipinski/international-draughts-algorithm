@@ -121,8 +121,9 @@ public class GeneticAlgorithm {
         float queensParam = parent.getQueensWeight() + mutationFactor * (float) random.nextGaussian();
         float pawnsParam = parent.getPawnsWeight() + mutationFactor * (float) random.nextGaussian();
         float pawnsPosParam = parent.getPawnsPositionsWeight() + mutationFactor * (float) random.nextGaussian();
+        float pawnsStructParam = parent.getPawnsStructuresWeight() + mutationFactor * (float) random.nextGaussian();
 
-        return new Specimen(queensParam, pawnsParam, pawnsPosParam);
+        return new Specimen(queensParam, pawnsParam, pawnsPosParam, pawnsStructParam);
     }
 
     public GameEngine.GameState playGame(Specimen white, Specimen black) {
