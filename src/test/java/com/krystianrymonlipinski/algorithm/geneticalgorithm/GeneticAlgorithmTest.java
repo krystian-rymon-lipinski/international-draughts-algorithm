@@ -29,18 +29,6 @@ public class GeneticAlgorithmTest {
 
         assertEquals(0, testObj.getPopulation().size());
     }
-/*
-    @Test
-    public void playTournament() {
-        testObj.createFirstGeneration();
-        testObj.playTournament_allWithAll();
-
-        int numberOfPlayers = testObj.getSpecimens().size();
-        int numberOfMatchesToPlay = numberOfPlayers * (numberOfPlayers-1)/2;
-
-        verify(testObj, times(numberOfMatchesToPlay)).playGame(any(Specimen.class), any(Specimen.class));
-    }
- */
 
     @Test
     public void playGame() {

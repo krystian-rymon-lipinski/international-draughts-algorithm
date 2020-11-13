@@ -76,7 +76,6 @@ public class GeneticAlgorithm {
                     }
                 }
                 else { //draw in tournament tree
-                    System.out.println("Rematch!");
                     GameEngine.GameState rematchResult = playGame(secondPlayer, firstPlayer);
 
                     if (rematchResult != GameEngine.GameState.DRAWN) {
@@ -87,7 +86,7 @@ public class GeneticAlgorithm {
                         }
                     }
 
-                    else { //draw after rematch - what to do?
+                    else { //draw after rematch - what to do? maybe create new child as a cross?
                         adjustStandings(standings, firstPlayer, secondPlayer); //roboczo na razie
                     }
                 }
@@ -101,7 +100,6 @@ public class GeneticAlgorithm {
 
     public ArrayList<Specimen> adjustStandings(ArrayList<Specimen> standings,
                                                Specimen winner, Specimen loser) {
-        System.out.println("Winner: " + winner + " \n Loser: " + loser);
         population.add(winner);
         standings.add(loser);
         return standings;
@@ -115,6 +113,7 @@ public class GeneticAlgorithm {
         int childrenToCreate = POPULATION_SIZE - NUMBER_OF_BEST_TO_SELECT;
         if (NUMBER_OF_BEST_TO_SELECT == 1) {
             Specimen parent = population.get(0);
+            System.out.println("Winner: " + parent);
             for (int i=0; i<childrenToCreate; i++) {
                 population.add(createChild(parent));
             }
