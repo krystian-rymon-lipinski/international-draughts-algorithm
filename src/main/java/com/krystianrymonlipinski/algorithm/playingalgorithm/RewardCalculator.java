@@ -17,9 +17,9 @@ public class RewardCalculator {
     public final static int FITNESS_FUNCTION_VALUE_DRAW = 0;
 
     private final BoardManager boardManager;
-    private double fitnessFunctionValue;
+    private float fitnessFunctionValue;
 
-    private final double[] queenValueCoefficients = {
+    private final float[] queenValueCoefficients = {
         /* Interpolation nodes (number of pieces on the board -> value added to queenValue parameter):
             1 -> 3.25
             10 -> 2.85
@@ -27,23 +27,11 @@ public class RewardCalculator {
             30 -> 2.65
             40 -> 2.25
          */
-        3.20484 * Math.pow(10, -7),
-        -8.2084 * Math.pow(10, -5),
-        0.0041,
-        -0.0810,
-        3.3270
-    };
-    private final double[] pawnRowValueCoefficients = {
-        /* Interpolation nodes (piece row (from its side of the board) -> value added to pawnRow parameter):
-            6 -> 0.02
-            7 -> 0.05
-            8 -> 0.15
-            9 -> 0.25
-         */
-        -0.0117,
-        0.28,
-        -2.1283,
-        5.23
+        3.20484f * (float) Math.pow(10, -7),
+        -8.2084f * (float) Math.pow(10, -5),
+        0.0041f,
+        -0.0810f,
+        3.3270f
     };
 
     public RewardCalculator(BoardManager boardManager) {
@@ -79,7 +67,7 @@ public class RewardCalculator {
     }
 
     private Node<PositionState, Move<? extends Hop>> findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
-        double minimum = Double.MAX_VALUE;
+        float minimum = FITNESS_FUNCTION_VALUE_WHITE_WON + 1;
         Node<PositionState, Move<? extends Hop>> currentMinimumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
@@ -94,7 +82,7 @@ public class RewardCalculator {
     }
 
     private Node<PositionState, Move<? extends Hop>> findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
-        double maximum = -Double.MAX_VALUE;
+        float maximum = FITNESS_FUNCTION_VALUE_BLACK_WON - 1;
         Node<PositionState, Move<? extends Hop>> currentMaximumChild = null;
 
         for (Node<PositionState, Move<? extends Hop>> child : ancestor.getChildren()) {
@@ -109,14 +97,14 @@ public class RewardCalculator {
     }
 
     public void calculatePosition(Specimen specimen) {
-        double whitePiecesValue = calculatePieces(boardManager.getWhitePieces(), specimen);
-        double blackPiecesValue = calculatePieces(boardManager.getBlackPieces(), specimen);
+        float whitePiecesValue = calculatePieces(boardManager.getWhitePieces(), specimen);
+        float blackPiecesValue = calculatePieces(boardManager.getBlackPieces(), specimen);
 
         fitnessFunctionValue = whitePiecesValue - blackPiecesValue;
     }
 
-    public double calculatePieces(ArrayList<Piece> pieces, Specimen specimen) {
-        double[] fitnessValue = new double[4];
+    public float calculatePieces(ArrayList<Piece> pieces, Specimen specimen) {
+        float[] fitnessValue = new float[4];
         for (Piece piece : pieces) {
             if (piece.isQueen()) fitnessValue[0] += calculateQueenValue();
             else {
@@ -143,26 +131,26 @@ public class RewardCalculator {
         }
     }
 
-    private double queenFunctionBasic(int numberOfPieces) {
+    private float queenFunctionBasic(int numberOfPieces) {
         return 3;
     }
 
-    private double calculateQueenValue() {
+    private float calculateQueenValue() {
         int numberOfPieces = boardManager.getBlackPieces().size() + boardManager.getWhitePieces().size();
 
-        return  queenValueCoefficients[0] * Math.pow(numberOfPieces, 4) +
-                queenValueCoefficients[1] * Math.pow(numberOfPieces, 3) +
-                queenValueCoefficients[2] * Math.pow(numberOfPieces, 2) +
-                queenValueCoefficients[3] * numberOfPieces +
+        return  queenValueCoefficients[0] * (float) Math.pow(numberOfPieces, 4) +
+                queenValueCoefficients[1] * (float) Math.pow(numberOfPieces, 3) +
+                queenValueCoefficients[2] * (float) Math.pow(numberOfPieces, 2) +
+                queenValueCoefficients[3] * (float) numberOfPieces +
                 queenValueCoefficients[4];
 
     }
 
-    private double calculatePawnRowValue(int row) {
-        return  (Math.pow(2, (float) row/2) - 1) / 50;
+    private float calculatePawnRowValue(int row) {
+        return  (float) (Math.pow(2, (float) row/2) - 1) / 50;
     }
 
-    private double calculatePawnStructureValue(Piece piece) {
+    private float calculatePawnStructureValue(Piece piece) {
         int friendlyNeighbours = 0;
 
         if (piece.getPosition().getColumn() == 1) {
@@ -191,6 +179,6 @@ public class RewardCalculator {
             }
         }
 
-        return (double) friendlyNeighbours*friendlyNeighbours/100;
+        return (float) friendlyNeighbours*friendlyNeighbours/100;
     }
 }

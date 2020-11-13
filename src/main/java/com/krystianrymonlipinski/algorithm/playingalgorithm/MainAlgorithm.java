@@ -135,7 +135,7 @@ public class MainAlgorithm {
     public void updateAlphaBeta_movingUp(Node<PositionState, Move<? extends Hop>> recentChild) {
 
         boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
-        double recentChildValue = recentChild.getState().getRewardFunctionOutcome();
+        float recentChildValue = recentChild.getState().getRewardFunctionOutcome();
 
         if (isNodeMaximizing) {
             if (recentChildValue > moveTree.getCurrentNode().getState().getAlpha()) {

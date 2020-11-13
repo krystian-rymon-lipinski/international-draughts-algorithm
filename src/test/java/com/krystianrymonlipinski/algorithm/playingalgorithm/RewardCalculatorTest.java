@@ -28,22 +28,22 @@ public class RewardCalculatorTest {
 
         Node<PositionState, Move<? extends Hop>> child1 = new Node<>();
         child1.setState(new PositionState(gameEngine));
-        child1.getState().setRewardFunctionOutcome(5.2);
+        child1.getState().setRewardFunctionOutcome(5.2f);
 
         Node<PositionState, Move<? extends Hop>> child2 = new Node<>();
         child2.setState(new PositionState(gameEngine));
-        child2.getState().setRewardFunctionOutcome(-2.1);
+        child2.getState().setRewardFunctionOutcome(-2.1f);
 
         Node<PositionState, Move<? extends Hop>> child3 = new Node<>();
         child3.setState(new PositionState(gameEngine));
-        child3.getState().setRewardFunctionOutcome(0.98);
+        child3.getState().setRewardFunctionOutcome(0.98f);
 
         root.addChild(child1);
         root.addChild(child2);
         root.addChild(child3);
 
         testObj.findBestChild(root, true);
-        assertEquals(5.2, root.getState().getRewardFunctionOutcome(), 0);
+        assertEquals(5.2f, root.getState().getRewardFunctionOutcome(), 0);
     }
 
     @Test
@@ -53,22 +53,22 @@ public class RewardCalculatorTest {
 
         Node<PositionState, Move<? extends Hop>> child1 = new Node<>();
         child1.setState(new PositionState(gameEngine));
-        child1.getState().setRewardFunctionOutcome(3.1);
+        child1.getState().setRewardFunctionOutcome(3.1f);
 
         Node<PositionState, Move<? extends Hop>> child2 = new Node<>();
         child2.setState(new PositionState(gameEngine));
-        child2.getState().setRewardFunctionOutcome(0.11);
+        child2.getState().setRewardFunctionOutcome(0.11f);
 
         Node<PositionState, Move<? extends Hop>> child3 = new Node<>();
         child3.setState(new PositionState(gameEngine));
-        child3.getState().setRewardFunctionOutcome(-4.91);
+        child3.getState().setRewardFunctionOutcome(-4.91f);
 
         root.addChild(child1);
         root.addChild(child2);
         root.addChild(child3);
 
         testObj.findBestChild(root, false);
-        assertEquals(-4.91, root.getState().getRewardFunctionOutcome(), 0);
+        assertEquals(-4.91f, root.getState().getRewardFunctionOutcome(), 0);
     }
 
     @Test
