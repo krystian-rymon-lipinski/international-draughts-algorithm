@@ -49,10 +49,12 @@ public class MainAlgorithmTest {
     }
 
     public void iterate(ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels) {
-        for (Node<PositionState, Move<? extends Hop>> child : moveTree.getCurrentNode().getChildren()) {
-            moveTree.moveDown(child.getCondition());
-            iterate(nodesOnLevels);
-            moveTree.moveUp();
+        if (moveTree.getCurrentNode().getChildren() != null) {
+            for (Node<PositionState, Move<? extends Hop>> child : moveTree.getCurrentNode().getChildren()) {
+                moveTree.moveDown(child.getCondition());
+                iterate(nodesOnLevels);
+                moveTree.moveUp();
+            }
         }
 
         int levelDifference = moveTree.getCurrentNode().getLevel() - moveTree.getRoot().getLevel();
@@ -69,7 +71,6 @@ public class MainAlgorithmTest {
 
         ArrayList<ArrayList<Node<PositionState, Move<? extends Hop>>>> nodesOnLevels =
                 countTreeNodes(1);
-
 
         assertEquals(testObj.getMoveTree().getRoot(), testObj.getMoveTree().getCurrentNode());
 
@@ -167,7 +168,7 @@ public class MainAlgorithmTest {
         int numberOfNodesWithGameEnded = 0;
         for(Node<PositionState, Move<? extends Hop>> node : nodesOnLevels.get(2)) {
             if (node.getState().getGameState() != GameEngine.GameState.RUNNING) {
-                assertEquals(0, node.getChildren().size());
+                assertNull(node.getChildren());
                 assertEquals(GameEngine.GameState.WON_BY_BLACK, node.getState().getGameState());
                 assertEquals(-100, node.getState().getRewardFunctionOutcome(), 0);
                 numberOfNodesWithGameEnded++;
