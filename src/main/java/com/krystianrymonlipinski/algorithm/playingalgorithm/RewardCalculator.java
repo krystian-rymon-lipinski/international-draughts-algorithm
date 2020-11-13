@@ -78,7 +78,7 @@ public class RewardCalculator {
         else                  return findMinimumChild(ancestor);
     }
 
-    public Node<PositionState, Move<? extends Hop>> findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    private Node<PositionState, Move<? extends Hop>> findMinimumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double minimum = Double.MAX_VALUE;
         Node<PositionState, Move<? extends Hop>> currentMinimumChild = null;
 
@@ -93,7 +93,7 @@ public class RewardCalculator {
         return currentMinimumChild;
     }
 
-    public Node<PositionState, Move<? extends Hop>> findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
+    private Node<PositionState, Move<? extends Hop>> findMaximumChild(Node<PositionState, Move<? extends Hop>> ancestor) {
         double maximum = -Double.MAX_VALUE;
         Node<PositionState, Move<? extends Hop>> currentMaximumChild = null;
 
@@ -137,11 +137,12 @@ public class RewardCalculator {
             }
         }
         if (specimen == null) {
-            return fitnessValue[0] + fitnessValue[1] + fitnessValue[2];
+            return fitnessValue[0] + fitnessValue[1] + fitnessValue[2] + fitnessValue[3];
         } else {
             return  specimen.getQueensWeight() * fitnessValue[0] +
-                    specimen.getPawnsWeight() + fitnessValue[1] +
-                    specimen.getPawnsPositionsWeight() + fitnessValue[2];
+                    specimen.getPawnsWeight() * fitnessValue[1] +
+                    specimen.getPawnsPositionsWeight() * fitnessValue[2] +
+                    specimen.getPawnsStructuresWeight() * fitnessValue[3];
         }
     }
 
@@ -168,7 +169,6 @@ public class RewardCalculator {
     }
 
     private double calculatePawnStructureValue(Piece piece) {
-        System.out.println(piece.getPosition());
         int friendlyNeighbours = 0;
 
         if (piece.getPosition().getColumn() == 1) {

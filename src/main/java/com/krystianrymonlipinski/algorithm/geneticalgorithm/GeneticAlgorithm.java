@@ -5,7 +5,6 @@ import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
 import draughts.library.movemodel.Move;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 public class GeneticAlgorithm {
@@ -13,7 +12,7 @@ public class GeneticAlgorithm {
     private final static int ALGORITHM_DEPTH = 4;
 
     private final static int NUMBER_OF_GENERATIONS = 20;
-    private final static int POPULATION_SIZE = 6;
+    private final static int POPULATION_SIZE = 8;
     private final static int PARAMETER_RANGE_MIN = -1;
     private final static int PARAMETER_RANGE_MAX = 10;
     private final static int PARAMETER_RANGE = PARAMETER_RANGE_MIN + PARAMETER_RANGE_MAX;
@@ -22,13 +21,13 @@ public class GeneticAlgorithm {
 
     private float mutationFactor = 0.3f * PARAMETER_RANGE;
 
-    private ArrayList<Specimen> specimens = new ArrayList<>();
+    private ArrayList<Specimen> population = new ArrayList<>();
 
 
 
 
-    public ArrayList<Specimen> getSpecimens() {
-        return specimens;
+    public ArrayList<Specimen> getPopulation() {
+        return population;
     }
 
     public void trainAlgorithm() {
@@ -36,7 +35,7 @@ public class GeneticAlgorithm {
 
         for (int i=0; i<NUMBER_OF_GENERATIONS; i++) {
             System.out.println("Tournament for generation: " + (i+1) + "/" + NUMBER_OF_GENERATIONS);
-            ArrayList<TournamentPlayer> standings = playTournament();
+            ArrayList<Specimen> standings = playTournament_playOff();
             chooseBestSpecimens(standings);
             createChildrenByMutation();
 
@@ -46,71 +45,82 @@ public class GeneticAlgorithm {
 
     public void createFirstGeneration() {
         for (int i = 0; i< POPULATION_SIZE; i++) {
-            specimens.add(new Specimen(PARAMETER_RANGE_MIN, PARAMETER_RANGE_MAX));
+            population.add(new Specimen(PARAMETER_RANGE_MIN, PARAMETER_RANGE_MAX));
+            System.out.println(population.get(i));
         }
     }
 
-    public ArrayList<TournamentPlayer> playTournament() { //every algorithm with every algorithm
-        ArrayList<TournamentPlayer> tournamentStandings = new ArrayList<>();
-        for (int i = 0; i< POPULATION_SIZE; i++) {
-            tournamentStandings.add(new TournamentPlayer(specimens.get(i)));
-        }
-        int gameNumber = 1;
-        int gamesToPlay = tournamentStandings.size() * (tournamentStandings.size() - 1) / 2;
+    public ArrayList<Specimen> playTournament_playOff() {
+        Random random = new Random();
+        int numberOfRounds = (int) (Math.log(POPULATION_SIZE) / Math.log(2));
 
-        for (int i=0; i<tournamentStandings.size(); i++) {
-            for (int j=0; j<tournamentStandings.size(); j++) {
-                if (i > j) {
-                    System.out.println("Game number: " + gameNumber + "/" + gamesToPlay);
-                    boolean changeColors = new Random().nextBoolean();
-                    GameEngine.GameState gameResult;
-                    if (changeColors) {
-                        gameResult = playGame(tournamentStandings.get(j).getPlayer(), tournamentStandings.get(j).getPlayer());
+        ArrayList<Specimen> standings = new ArrayList<>();
+
+        for (int i=0; i<numberOfRounds; i++) {
+            int numberOfPairsInRound = POPULATION_SIZE / (int) Math.pow(2, (i+1));
+
+            for(int j = 0; j < numberOfPairsInRound; j++) {
+                int numberOfPlayersLeft = (numberOfPairsInRound - j) * 2;
+
+                Specimen firstPlayer = population.get(random.nextInt(numberOfPlayersLeft));
+                population.remove(firstPlayer);
+                Specimen secondPlayer = population.get(random.nextInt(numberOfPlayersLeft - 1));
+                population.remove(secondPlayer);
+                GameEngine.GameState result = playGame(firstPlayer, secondPlayer);
+
+                if (result != GameEngine.GameState.DRAWN) {
+                    if (result == GameEngine.GameState.WON_BY_WHITE) {
+                        standings = adjustStandings(standings, firstPlayer, secondPlayer);
                     } else {
-                        gameResult = playGame(tournamentStandings.get(i).getPlayer(), tournamentStandings.get(j).getPlayer());
+                        standings = adjustStandings(standings, secondPlayer, firstPlayer);
+                    }
+                }
+                else { //draw in tournament tree
+                    System.out.println("Rematch!");
+                    GameEngine.GameState rematchResult = playGame(secondPlayer, firstPlayer);
+
+                    if (rematchResult != GameEngine.GameState.DRAWN) {
+                        if (rematchResult == GameEngine.GameState.WON_BY_WHITE) {
+                            standings = adjustStandings(standings, secondPlayer, firstPlayer);
+                        } else {
+                            standings = adjustStandings(standings, firstPlayer, secondPlayer);
+                        }
                     }
 
-                    switch (gameResult) {
-                        case WON_BY_WHITE:
-                                if (changeColors) tournamentStandings.get(j).addWin();
-                                else              tournamentStandings.get(i).addWin();
-                            break;
-                        case WON_BY_BLACK:
-                                if (changeColors) tournamentStandings.get(i).addWin();
-                                else              tournamentStandings.get(j).addWin();
-                            break;
-                        case DRAWN:
-                            tournamentStandings.get(i).addDraw();
-                            tournamentStandings.get(j).addDraw();
+                    else { //draw after rematch - what to do?
+                        adjustStandings(standings, firstPlayer, secondPlayer); //roboczo na razie
                     }
-                    gameNumber++;
                 }
             }
         }
+        standings.add(0, population.get(0));
+        population.remove(0);
 
-        Collections.sort(tournamentStandings);
-        showStandings(tournamentStandings);
-        return tournamentStandings;
+        return standings;
     }
 
-    public void chooseBestSpecimens(ArrayList<TournamentPlayer> tournamentStandings) {
-        specimens.clear();
+    public ArrayList<Specimen> adjustStandings(ArrayList<Specimen> standings,
+                                               Specimen winner, Specimen loser) {
+        System.out.println("Winner: " + winner + " \n Loser: " + loser);
+        population.add(winner);
+        standings.add(loser);
+        return standings;
+    }
 
-        for (int i=0; i<NUMBER_OF_BEST_TO_SELECT; i++) {
-            specimens.add(tournamentStandings.get(i).player);
-        }
+    public void chooseBestSpecimens(ArrayList<Specimen> standings) {
+        population.addAll(standings.subList(0, NUMBER_OF_BEST_TO_SELECT));
     }
 
     public void createChildrenByMutation() {
         int childrenToCreate = POPULATION_SIZE - NUMBER_OF_BEST_TO_SELECT;
         if (NUMBER_OF_BEST_TO_SELECT == 1) {
-            Specimen parent = specimens.get(0);
+            Specimen parent = population.get(0);
             for (int i=0; i<childrenToCreate; i++) {
-                specimens.add(createChild(parent));
+                population.add(createChild(parent));
             }
         }
         else {
-            //what to do if more best are selected? (tie in standings)
+            //what to do if more best are selected?
         }
 
 
@@ -127,6 +137,8 @@ public class GeneticAlgorithm {
     }
 
     public GameEngine.GameState playGame(Specimen white, Specimen black) {
+        System.out.println("White: " + white + " \n Black: " + black);
+
         GameEngine gameEngine = new GameEngine();
         gameEngine.startGame();
         boolean whiteToMove = true;
@@ -150,46 +162,6 @@ public class GeneticAlgorithm {
         }
 
         return gameEngine.getGameState();
-    }
-
-    public void showStandings(ArrayList<TournamentPlayer> standings) {
-        for (TournamentPlayer player : standings) {
-            System.out.println("Player: " + player.getPlayer() + " Score: " + player.getScore());
-        }
-        System.out.println("----------------");
-    }
-
-    private static class TournamentPlayer implements Comparable<TournamentPlayer>{
-        private Specimen player;
-        private float score;
-
-        private TournamentPlayer(Specimen specimen) {
-            this.player = specimen;
-            this.score = 0;
-        }
-
-        public Specimen getPlayer() {
-            return player;
-        }
-
-        public float getScore() {
-            return score;
-        }
-
-        public void addWin() {
-            this.score++;
-        }
-
-        public void addDraw() {
-            this.score += 0.5f;
-        }
-
-        @Override
-        public int compareTo(TournamentPlayer player) {
-            if (this.score - player.score < 0)      return 1;
-            else if (this.score - player.score > 0) return -1;
-            else                                    return 0;
-        }
     }
 
 }
