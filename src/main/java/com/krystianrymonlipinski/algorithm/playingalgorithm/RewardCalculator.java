@@ -123,17 +123,14 @@ public class RewardCalculator {
                 fitnessValue[1] += 1;
 
                 int row = piece.getPosition().getRow();
-                if (piece.isWhite() && row <= 5) {
+                if (piece.isWhite()) {
                     fitnessValue[2] += calculatePawnRowValue(Math.abs(row-11));
                 }
-                else if (!piece.isWhite() && row >= 6) {
+                else {
                     fitnessValue[2] += calculatePawnRowValue(row);
                 }
 
-                if ( (piece.isWhite() && row <= 5) || (!piece.isWhite() && row >=6) ||
-                      pieces.size() < 10) {
-                    fitnessValue[3] += calculatePawnStructureValue(piece);
-                }
+                fitnessValue[3] += calculatePawnStructureValue(piece);
             }
         }
         if (specimen == null) {
@@ -162,10 +159,7 @@ public class RewardCalculator {
     }
 
     private double calculatePawnRowValue(int row) {
-        return  pawnRowValueCoefficients[0] * row * row * row + //multiplication is faster in case of integer powers
-                pawnRowValueCoefficients[1] * row * row       +
-                pawnRowValueCoefficients[2] * row             +
-                pawnRowValueCoefficients[3];
+        return  (Math.pow(2, (float) row/2) - 1) / 50;
     }
 
     private double calculatePawnStructureValue(Piece piece) {

@@ -1,7 +1,6 @@
 package com.krystianrymonlipinski.algorithm.playingalgorithm;
 
 import com.krystianrymonlipinski.tree.model.Node;
-import draughts.library.boardmodel.Piece;
 import draughts.library.managers.BoardManager;
 import draughts.library.managers.GameEngine;
 import draughts.library.movemodel.Hop;
@@ -73,12 +72,27 @@ public class RewardCalculatorTest {
     }
 
     @Test
+    public void calculatePosition_noWeights_withQueens() {
+        BoardManager boardManager = gameEngine.getBoardManager();
+        boardManager.createEmptyBoard();
+        boardManager.addWhiteQueen(12);
+        boardManager.addWhiteQueen(35);
+        boardManager.addBlackQueen(19);
+
+        double whiteValue = testObj.calculatePieces(boardManager.getWhitePieces(), null);
+        double blackValue = testObj.calculatePieces(boardManager.getBlackPieces(), null);
+
+        assertEquals(6.24, whiteValue, 0.02); //minor inconsistencies possible
+        assertEquals(3.12, blackValue, 0.02);
+    }
+
+    @Test
     public void calculatePosition_noWeights_withPawnRows() {
         BoardManager boardManager = gameEngine.getBoardManager();
         boardManager.createEmptyBoard();
         boardManager.addWhitePawn(10);
         boardManager.addWhitePawn(11);
-        boardManager.addWhitePawn(27);
+        boardManager.addWhitePawn(22);
         boardManager.addBlackPawn(24);
         boardManager.addBlackPawn(33);
         boardManager.addBlackPawn(41);
@@ -86,8 +100,8 @@ public class RewardCalculatorTest {
         double whiteValue = testObj.calculatePieces(boardManager.getWhitePieces(), null);
         double blackValue = testObj.calculatePieces(boardManager.getBlackPieces(), null);
 
-        assertEquals(3.4, whiteValue, 0.05); //some inconsistencies on third power
-        assertEquals(3.3, blackValue, 0.05);
+        assertEquals(3.88, whiteValue, 0.02); //minor inconsistencies possible
+        assertEquals(3.73, blackValue, 0.02);
     }
 
     @Test
@@ -104,7 +118,7 @@ public class RewardCalculatorTest {
         double whiteValue = testObj.calculatePieces(boardManager.getWhitePieces(), null);
         double blackValue = testObj.calculatePieces(boardManager.getBlackPieces(), null);
 
-        assertEquals(3.41, whiteValue, 0.05);
-        assertEquals(3.31, blackValue, 0.05);
+        assertEquals(3.86, whiteValue, 0.02);
+        assertEquals(3.77, blackValue, 0.02);
     }
 }
