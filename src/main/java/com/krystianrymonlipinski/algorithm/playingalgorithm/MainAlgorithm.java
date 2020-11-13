@@ -104,20 +104,21 @@ public class MainAlgorithm {
     }
 
     public void travelThroughTree(int levelToCalculate, Specimen specimen) {
-        for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
+        if (moveTree.getCurrentNode().getChildren() != null) {
+            for (Node<PositionState, Move<? extends Hop>> node : moveTree.getCurrentNode().getChildren()) {
 
-            moveTree.moveDown(node.getCondition());
-            if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
-                bindMovesAsNodes(levelToCalculate, specimen);
+                moveTree.moveDown(node.getCondition());
+                if (moveTree.getCurrentNode().getLevel() == (levelToCalculate - 1)) {
+                    bindMovesAsNodes(levelToCalculate, specimen);
+                } else {
+                    travelThroughTree(levelToCalculate, specimen);
+                }
+                moveTree.moveUp();
             }
-            else {
-                travelThroughTree(levelToCalculate, specimen);
+            boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
+            if (!moveTree.getCurrentNode().getChildren().isEmpty()) {
+                rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
             }
-            moveTree.moveUp();
-        }
-        boolean isNodeMaximizing = moveTree.getGameEngine().getIsWhiteToMove();
-        if (!moveTree.getCurrentNode().getChildren().isEmpty()) {
-            rewardCalculator.findBestChild(moveTree.getCurrentNode(), isNodeMaximizing);
         }
     }
 
