@@ -158,11 +158,17 @@ public class RewardCalculator {
         } else {
             if (piece.getPosition().getRow() > 1) {
                 Tile upLeftTile = piece.findTarget(Piece.MoveDirection.UP_LEFT, boardManager.getBoard(), 1);
-                if (piece.isTileOccupiedBySameColor(upLeftTile)) friendlyNeighbours++;
+                if ( (piece.isWhite() && upLeftTile.getState() == Tile.State.WHITE_PAWN || //queen is not welcomed in structures
+                      !piece.isWhite() && upLeftTile.getState() == Tile.State.BLACK_PAWN) ) {
+                    friendlyNeighbours++;
+                }
             }
             if (piece.getPosition().getRow() < 10) {
                 Tile downLeftTile = piece.findTarget(Piece.MoveDirection.DOWN_LEFT, boardManager.getBoard(), 1);
-                if (piece.isTileOccupiedBySameColor(downLeftTile)) friendlyNeighbours++;
+                if ( (piece.isWhite() && downLeftTile.getState() == Tile.State.WHITE_PAWN ||
+                        !piece.isWhite() && downLeftTile.getState() == Tile.State.BLACK_PAWN) ) {
+                    friendlyNeighbours++;
+                }
             }
         }
 
@@ -171,11 +177,17 @@ public class RewardCalculator {
         } else {
             if (piece.getPosition().getRow() > 1) {
                 Tile upRightTile = piece.findTarget(Piece.MoveDirection.UP_RIGHT, boardManager.getBoard(), 1);
-                if (piece.isTileOccupiedBySameColor(upRightTile)) friendlyNeighbours++;
+                if ( (piece.isWhite() && upRightTile.getState() == Tile.State.WHITE_PAWN ||
+                        !piece.isWhite() && upRightTile.getState() == Tile.State.BLACK_PAWN) ) {
+                    friendlyNeighbours++;
+                }
             }
             if (piece.getPosition().getRow() < 10) {
                 Tile downRightTile = piece.findTarget(Piece.MoveDirection.DOWN_RIGHT, boardManager.getBoard(), 1);
-                if (piece.isTileOccupiedBySameColor(downRightTile)) friendlyNeighbours++;
+                if ( (piece.isWhite() && downRightTile.getState() == Tile.State.WHITE_PAWN ||
+                        !piece.isWhite() && downRightTile.getState() == Tile.State.BLACK_PAWN) ) {
+                    friendlyNeighbours++;
+                }
             }
         }
 
