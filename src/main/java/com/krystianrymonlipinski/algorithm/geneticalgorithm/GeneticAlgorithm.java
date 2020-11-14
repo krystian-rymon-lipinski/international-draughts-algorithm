@@ -11,7 +11,7 @@ public class GeneticAlgorithm {
 
     private final static int ALGORITHM_DEPTH = 4;
 
-    private final static int NUMBER_OF_GENERATIONS = 20;
+    private final static int NUMBER_OF_GENERATIONS = 10;
     private final static int POPULATION_SIZE = 8;
     private final static int PARAMETER_RANGE_MIN = -1;
     private final static int PARAMETER_RANGE_MAX = 10;
@@ -19,7 +19,7 @@ public class GeneticAlgorithm {
 
     private final static int NUMBER_OF_BEST_TO_SELECT = 1;
 
-    private float mutationFactor = 0.3f * PARAMETER_RANGE;
+    private float mutationFactor = 0.2f * PARAMETER_RANGE;
 
     private ArrayList<Specimen> population = new ArrayList<>();
 
@@ -41,6 +41,8 @@ public class GeneticAlgorithm {
 
             mutationFactor -= 0.01f * PARAMETER_RANGE;
         }
+
+        System.out.println("Best specimen: " + population.get(0));
     }
 
     public void createFirstGeneration() {
@@ -86,8 +88,10 @@ public class GeneticAlgorithm {
                         }
                     }
 
-                    else { //draw after rematch - what to do? maybe create new child as a cross?
-                        adjustStandings(standings, firstPlayer, secondPlayer); //roboczo na razie
+                    else { //draw in rematch - create new player from both parents
+                        Specimen newPlayer = createChildByCrossing(firstPlayer, secondPlayer);
+                        if (new Random().nextBoolean()) adjustStandings(standings, newPlayer, firstPlayer);
+                        else                            adjustStandings(standings, newPlayer, secondPlayer);
                     }
                 }
             }
@@ -113,19 +117,42 @@ public class GeneticAlgorithm {
         int childrenToCreate = POPULATION_SIZE - NUMBER_OF_BEST_TO_SELECT;
         if (NUMBER_OF_BEST_TO_SELECT == 1) {
             Specimen parent = population.get(0);
-            System.out.println("Winner: " + parent);
             for (int i=0; i<childrenToCreate; i++) {
-                population.add(createChild(parent));
+                population.add(createChildByMutation(parent));
             }
         }
         else {
             //what to do if more best are selected?
         }
-
-
     }
 
-    public Specimen createChild(Specimen parent) {
+    public Specimen createChildByCrossing(Specimen firstParent, Specimen secondParent) {
+        float[] firstParameters = new float[] {
+                firstParent.getQueensWeight(),
+                firstParent.getPawnsWeight(),
+                firstParent.getPawnsPositionsWeight(),
+                firstParent.getPawnsStructuresWeight()
+        };
+        float[] secondParameters = new float[] {
+                secondParent.getQueensWeight(),
+                secondParent.getPawnsWeight(),
+                secondParent.getPawnsPositionsWeight(),
+                secondParent.getPawnsStructuresWeight()
+        };
+        float[] childParameters = new float[4];
+
+        for (int i=0; i<firstParameters.length; i++) {
+            Random random = new Random();
+            if (random.nextBoolean()) {
+               childParameters[i] = firstParameters[i];
+            } else {
+                childParameters[i] = secondParameters[i];
+            }
+        }
+        return new Specimen(childParameters[0], childParameters[1], childParameters[2], childParameters[3]);
+    }
+
+    public Specimen createChildByMutation(Specimen parent) {
         Random random = new Random();
         float queensParam = parent.getQueensWeight() + mutationFactor * (float) random.nextGaussian();
         float pawnsParam = parent.getPawnsWeight() + mutationFactor * (float) random.nextGaussian();
@@ -136,8 +163,6 @@ public class GeneticAlgorithm {
     }
 
     public GameEngine.GameState playGame(Specimen white, Specimen black) {
-        System.out.println("White: " + white + " \n Black: " + black);
-
         GameEngine gameEngine = new GameEngine();
         gameEngine.startGame();
         boolean whiteToMove = true;
